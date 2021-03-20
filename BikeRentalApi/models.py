@@ -6,7 +6,7 @@ from BikeRentalApi.enums import BikeState, StationState, MalfunctionState
 
 class Person(models.Model):
     name = models.CharField(max_length = 100)
-    lastname = models.CharField(max_length = 100)
+    last_name = models.CharField(max_length = 100)
 
 
 class Admin(Person):
@@ -22,32 +22,32 @@ class User(Person):
 
 
 class BikeStation(models.Model):
-    LocationName = models.CharField(max_length = 100)
-    StationState = enum.EnumField(StationState, default = StationState.Working)
+    location_name = models.CharField(max_length = 100)
+    state = enum.EnumField(StationState, default = StationState.Working)
 
 
 class Bike(models.Model):
-    BikeState = enum.EnumField(BikeState, default = BikeState.Working)
-    Station = models.ForeignKey(BikeStation, on_delete = models.CASCADE)
+    bike_state = enum.EnumField(BikeState, default = BikeState.Working)
+    station = models.ForeignKey(BikeStation, on_delete = models.CASCADE)
 
 
 class Reservation(models.Model):
-    ReservationDate = models.DateTimeField()
-    ExpireDate = models.DateTimeField()
-    User = models.ForeignKey(User, on_delete = models.CASCADE)
-    Bike = models.ForeignKey(Bike, on_delete = models.CASCADE)
+    reservation_date = models.DateTimeField()
+    expire_date = models.DateTimeField()
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    bike = models.ForeignKey(Bike, on_delete = models.CASCADE)
 
 
 class Rental(models.Model):
-    StartDate = models.DateTimeField()
-    EndDate = models.DateTimeField()
-    User = models.ForeignKey(User, on_delete = models.CASCADE)
-    Bike = models.ForeignKey(Bike, on_delete = models.CASCADE)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    bike = models.ForeignKey(Bike, on_delete = models.CASCADE)
 
 
 class Malfunction(models.Model):
-    DetectionDate = models.DateTimeField()
-    Description = models.CharField(max_length = 200)
-    State = enum.EnumField(MalfunctionState, default = MalfunctionState.NotFixed)
-    Bike = models.ForeignKey(Bike, on_delete = models.CASCADE)
-    ReportingUser = models.ForeignKey(User, on_delete = models.CASCADE)
+    detection_date = models.DateTimeField()
+    description = models.CharField(max_length = 200)
+    state = enum.EnumField(MalfunctionState, default = MalfunctionState.NotFixed)
+    bike = models.ForeignKey(Bike, on_delete = models.CASCADE)
+    reporting_user = models.ForeignKey(User, on_delete = models.CASCADE)
