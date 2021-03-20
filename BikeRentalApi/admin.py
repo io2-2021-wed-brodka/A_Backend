@@ -1,4 +1,4 @@
-# from django.contrib import admin
+from django.contrib import admin
 
 from BikeRentalApi.models import Bike, BikeStation, Reservation, Rental, Malfunction, User, Admin, Tech
 
