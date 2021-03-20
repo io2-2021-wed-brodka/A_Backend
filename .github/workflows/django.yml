@@ -28,7 +28,7 @@ jobs:
         python -m pip install -r requirements.txt
     - name: Code check
       run: |
-        flake8 --ignore=E501 **/*.py
+        flake8 --ignore=E501,E251 **/*.py
     - name: Run Tests
       run: |
         python manage.py test
