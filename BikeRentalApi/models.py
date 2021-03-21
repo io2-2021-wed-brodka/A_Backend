@@ -1,7 +1,7 @@
 from django.db import models
 from django_enumfield import enum
 
-from BikeRentalApi.enums import BikeState, StationState, MalfunctionState
+from BikeRentalApi.enums import BikeState, StationState
 
 
 class Person(models.Model):
@@ -31,23 +31,8 @@ class Bike(models.Model):
     station = models.ForeignKey(BikeStation, on_delete = models.CASCADE)
 
 
-class Reservation(models.Model):
-    reservation_date = models.DateTimeField()
-    expire_date = models.DateTimeField()
-    user = models.ForeignKey(User, on_delete = models.CASCADE)
-    bike = models.ForeignKey(Bike, on_delete = models.CASCADE)
-
-
 class Rental(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     user = models.ForeignKey(User, on_delete = models.CASCADE)
     bike = models.ForeignKey(Bike, on_delete = models.CASCADE)
-
-
-class Malfunction(models.Model):
-    detection_date = models.DateTimeField()
-    description = models.CharField(max_length = 200)
-    state = enum.EnumField(MalfunctionState, default = MalfunctionState.NotFixed)
-    bike = models.ForeignKey(Bike, on_delete = models.CASCADE)
-    reporting_user = models.ForeignKey(User, on_delete = models.CASCADE)

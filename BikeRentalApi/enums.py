@@ -10,8 +10,3 @@ class BikeState(enum.Enum):
 class StationState(enum.Enum):
     Working = 0
     Blocked = 1
-
-
-class MalfunctionState(enum.Enum):
-    Fixed = 0
-    NotFixed = 1
