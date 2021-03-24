@@ -18,17 +18,24 @@ class Tech(Person):
 
 
 class User(Person):
-    pass
+    def __str__(self):
+        return f'{self.name} {self.last_name}'
 
 
 class BikeStation(models.Model):
     location_name = models.CharField(max_length = 100)
     state = enum.EnumField(StationState, default = StationState.Working)
 
+    def __str__(self):
+        return 'station ' + self.location_name
+
 
 class Bike(models.Model):
     bike_state = enum.EnumField(BikeState, default = BikeState.Working)
     station = models.ForeignKey(BikeStation, on_delete = models.CASCADE)
+
+    def __str__(self):
+        return f'{self.bike_state} bike at {self.station} '
 
 
 class Rental(models.Model):
@@ -36,3 +43,6 @@ class Rental(models.Model):
     end_date = models.DateTimeField()
     user = models.ForeignKey(User, on_delete = models.CASCADE)
     bike = models.ForeignKey(Bike, on_delete = models.CASCADE)
+
+    def __str__(self):
+        return f'{self.user} rented {self.bike} from {self.start_date} to {self.end_date}'
