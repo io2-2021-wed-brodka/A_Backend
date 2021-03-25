@@ -13,10 +13,10 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class BikeSerializer(serializers.ModelSerializer):
-    id = IntegerField(label='ID', read_only=True)
-    bike_state = ChoiceField(choices=BikeState, required=True)
+    id = IntegerField(label = 'ID', read_only = True)
+    bike_state = ChoiceField(choices = BikeState, required = True)
     user = SerializerMethodField('get_user')
-    station = StationSerializer(many=False, read_only=True)
+    station = StationSerializer(many = False, read_only = True)
 
     class Meta:
         model = Bike
