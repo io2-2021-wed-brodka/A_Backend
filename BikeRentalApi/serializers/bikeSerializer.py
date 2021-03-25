@@ -2,14 +2,9 @@ from rest_framework import serializers
 from rest_framework.fields import IntegerField, ChoiceField, SerializerMethodField
 
 from BikeRentalApi.enums import BikeState
-from BikeRentalApi.models import Bike, User
+from BikeRentalApi.models import Bike
 from .stationSerializer import StationSerializer
-
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = '__all__'
+from .userSerializer import UserSerializer
 
 
 class BikeSerializer(serializers.ModelSerializer):
