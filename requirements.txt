@@ -2,3 +2,5 @@ Django>=3.1.7
 djangorestframework>=3.12.2
 flake8>=3.9.0
 django-enumfield>=2.0.2
+pytest>=6.2.2
+pytest-django>=4.1.0
