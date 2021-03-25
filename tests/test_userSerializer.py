@@ -7,7 +7,7 @@ from BikeRentalApi.serializers.userSerializer import UserSerializer
 @pytest.mark.django_db
 class TestUserSerializer:
     @pytest.fixture
-    def user(self, ):
+    def user(self):
         return User.objects.create(name = 'Jan', last_name = 'Kowalski')
 
     @pytest.fixture
