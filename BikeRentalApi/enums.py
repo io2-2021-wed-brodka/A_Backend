@@ -10,3 +10,14 @@ class BikeState(enum.Enum):
 class StationState(enum.Enum):
     Working = 0
     Blocked = 1
+
+
+class UserState(enum.Enum):
+    Active = 0
+    Banned = 1
+
+
+class Role(enum.Enum):
+    User = 0
+    Tech = 1
+    Admin = 2
