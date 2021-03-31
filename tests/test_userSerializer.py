@@ -15,7 +15,7 @@ class TestUserSerializer:
         return UserSerializer(user).data
 
     def test_contains_expected_fields(self, serialized_user):
-        assert set(serialized_user.keys()) == {'id', 'name', 'last_name'}
+        assert set(serialized_user.keys()) == {'id', 'name', 'last_name', 'role', 'state'}
 
     def test_name_field_content(self, serialized_user, user):
         assert serialized_user['name'] == user.name
