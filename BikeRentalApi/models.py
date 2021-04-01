@@ -1,25 +1,32 @@
 from django.db import models
 from django_enumfield import enum
 
-from BikeRentalApi.enums import BikeState, StationState
+from BikeRentalApi.enums import BikeState, StationState, Role, UserState
 
 
 class Person(models.Model):
     name = models.CharField(max_length = 100)
     last_name = models.CharField(max_length = 100)
+    role = enum.EnumField(Role, default = Role.User)
+
+    def __str__(self):
+        return f'{self.name} {self.last_name}'
 
 
 class Admin(Person):
-    pass
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.role = Role.Admin
 
 
 class Tech(Person):
-    pass
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.role = Role.Tech
 
 
 class User(Person):
-    def __str__(self):
-        return f'{self.name} {self.last_name}'
+    state = enum.EnumField(UserState, default = UserState.Active)
 
 
 class BikeStation(models.Model):
