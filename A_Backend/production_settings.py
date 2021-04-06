@@ -7,6 +7,8 @@ SECRET_KEY = os.environ['SECRET_KEY']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
