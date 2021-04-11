@@ -10,7 +10,7 @@ class Person(models.Model):
     role = enum.EnumField(Role, default = Role.User)
 
     def __str__(self):
-        return f'{self.user.first_name} {self.user.last_name}'
+        return f'{self.user.username}'
 
 
 class Admin(Person):
