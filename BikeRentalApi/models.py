@@ -39,7 +39,7 @@ class BikeStation(models.Model):
 
 class Bike(models.Model):
     bike_state = enum.EnumField(BikeState, default = BikeState.Working)
-    station = models.ForeignKey(BikeStation, on_delete = models.CASCADE)
+    station = models.ForeignKey(BikeStation, on_delete = models.CASCADE, null = True, blank = True)
 
     def __str__(self):
         return f'{self.bike_state} bike at {self.station} '
