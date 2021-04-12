@@ -34,7 +34,7 @@ class AppUser(Person):
 
 
 class BikeStation(models.Model):
-    location_name = models.CharField(max_length = 100)
+    name = models.CharField(max_length = 100)
     state = enum.EnumField(StationState, default = StationState.Working)
 
     def __str__(self):

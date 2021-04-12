@@ -1,6 +1,7 @@
 import pytest
+from django.contrib.auth.models import User
 
-from BikeRentalApi.models import User
+from BikeRentalApi.models import AppUser
 from BikeRentalApi.serializers.userSerializer import UserSerializer
 
 
@@ -8,7 +9,11 @@ from BikeRentalApi.serializers.userSerializer import UserSerializer
 class TestUserSerializer:
     @pytest.fixture
     def user(self):
-        return User.objects.create(name = 'Jan', last_name = 'Kowalski')
+        user = User.objects.create(
+            username = 'Mariusz', first_name = 'Mariusz', last_name = 'Tester', email = 'Janek@test.com',
+            password = 'test1234'
+        )
+        return AppUser.objects.create(user = user)
 
     @pytest.fixture
     def serialized_user(self, user):
@@ -18,4 +23,4 @@ class TestUserSerializer:
         assert set(serialized_user.keys()) == {'id', 'name'}
 
     def test_name_field_content(self, serialized_user, user):
-        assert serialized_user['name'] == user.name
+        assert serialized_user['name'] == user.user.first_name
