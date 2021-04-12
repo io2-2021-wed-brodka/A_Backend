@@ -28,6 +28,6 @@ class TestAuthentication:
             authenticate(authenticated_request)
 
     def test_returns_authorized_user(self, authenticated_request, user):
-        tech = Tech.objects.create(name = user.username, last_name = user.last_name)
+        tech = Tech.objects.create(user = user)
         auth_user = authenticate(authenticated_request)
         assert auth_user == tech

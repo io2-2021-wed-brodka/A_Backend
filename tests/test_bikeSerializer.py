@@ -1,10 +1,11 @@
 from datetime import date, time, datetime
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 import pytest
 
 from BikeRentalApi.enums import BikeState, StationState
-from BikeRentalApi.models import BikeStation, Bike, Rental, User
+from BikeRentalApi.models import BikeStation, Bike, Rental, AppUser
 from BikeRentalApi.serializers.bikeSerializer import BikeSerializer
 from BikeRentalApi.serializers.stationSerializer import StationSerializer
 from BikeRentalApi.serializers.userSerializer import UserSerializer
@@ -14,11 +15,15 @@ from BikeRentalApi.serializers.userSerializer import UserSerializer
 class TestBikeSerializer:
     @pytest.fixture()
     def user(self):
-        return User.objects.create(name = 'Jan', last_name = 'Testowy')
+        user = User.objects.create(
+            username = 'Mariusz', first_name = 'Mariusz', last_name = 'Tester', email = 'mariusz@test.com',
+            password = 'test123'
+        )
+        return AppUser.objects.create(user = user)
 
     @pytest.fixture()
     def bike(self, user):
-        station = BikeStation.objects.create(location_name = 'Test station', state = StationState.Working)
+        station = BikeStation.objects.create(name = 'Test station', state = StationState.Working)
         bike = Bike.objects.create(station = station, bike_state = BikeState.Working)
         rental_date = date(2005, 7, 14)
         rental_start_time = time(12, 30)
