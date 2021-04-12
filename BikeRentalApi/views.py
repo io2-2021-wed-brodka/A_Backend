@@ -4,7 +4,7 @@ from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 from rest_framework.exceptions import PermissionDenied, NotFound
-from rest_framework.response import Response
+from rest_framework import status
 
 from BikeRentalApi.models import Bike, Rental, BikeStation
 from BikeRentalApi.serializers.bikeSerializer import BikeSerializer
@@ -19,22 +19,22 @@ def bikes_list(request):
 
     if request.method == 'GET':
         if user.role < Role.Tech:
-            raise PermissionDenied()
+            return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_401_UNAUTHORIZED)
 
         bikes = Bike.objects.all()
         serializer = BikeSerializer(bikes, many = True)
-        return JsonResponse(serializer.data, safe = False, status = 200)
+        return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
     elif request.method == 'POST':
         if user.role != Role.Admin:
-            raise PermissionDenied()
+            return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_401_UNAUTHORIZED)
 
         serializer = BikeSerializer(data = request.data)
 
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, safe = False, status = 201)
+            return JsonResponse(serializer.data, safe = False, status = status.HTTP_201_CREATED)
 
-    raise NotFound()
+    return JsonResponse({}, status = status.HTTP_404_NOT_FOUND)
 
 
 def bikes_detail(request, pk):
@@ -42,15 +42,15 @@ def bikes_detail(request, pk):
 
     if request.method == 'DELETE':
         if user.Role != Role.Admin:
-            raise PermissionDenied()
+            return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_401_UNAUTHORIZED)
 
         bike = get_object_or_404(Bike, pk = pk)
         serializer = BikeSerializer(bike)
         bike.delete()
 
-        return JsonResponse(serializer.data, safe = False, status = 200)
+        return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
 
-    raise NotFound()
+    return JsonResponse({}, status = status.HTTP_404_NOT_FOUND)
 
 
 def stations_list(request):
@@ -59,7 +59,7 @@ def stations_list(request):
     if request.method == 'GET':
         bikes = BikeStation.objects.all()
         serializer = StationSerializer(bikes, many = True)
-        return JsonResponse(serializer.data, safe = False, status = 200)
+        return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
     elif request.method == 'POST':
         if user.role != Role.Admin:
             raise PermissionDenied()
@@ -69,9 +69,9 @@ def stations_list(request):
 
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, safe = False, status = 201)
+            return JsonResponse(serializer.data, safe = False, status = status.HTTP_201_CREATED)
 
-    raise NotFound()
+    return JsonResponse({}, status = status.HTTP_404_NOT_FOUND)
 
 
 def station_detail(request, pk):
@@ -81,7 +81,7 @@ def station_detail(request, pk):
         station = get_object_or_404(BikeStation, pk = pk)
         serializer = StationSerializer(station)
 
-        return JsonResponse(serializer.data, safe = False, status = 200)
+        return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
     elif request.method == 'DELETE':
         if user.role != Role.Admin:
             raise PermissionDenied()
@@ -90,9 +90,9 @@ def station_detail(request, pk):
         serializer = StationSerializer(station)
         station.delete()
 
-        return JsonResponse(serializer.data, safe = False, status = 200)
+        return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
 
-    raise NotFound()
+    return JsonResponse({}, status = status.HTTP_404_NOT_FOUND)
 
 
 def bikes_rented(request):
@@ -103,7 +103,7 @@ def bikes_rented(request):
         bikes = [rental.bike for rental in rentals]
         serializer = BikeSerializer(bikes, many = True)
 
-        return JsonResponse(serializer.data, safe = False)
+        return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
     elif request.method == 'POST':
         serializer = RentBikeSerializer(data = request.data)
 
@@ -124,6 +124,6 @@ def bikes_rented(request):
         rental.save()
 
         serializer = BikeSerializer(bike)
-        return JsonResponse(serializer.data, safe = False, status = 201)
+        return JsonResponse(serializer.data, safe = False, status = status.HTTP_201_CREATED)
 
-    raise NotFound()
+    return JsonResponse({}, status = status.HTTP_404_NOT_FOUND)
