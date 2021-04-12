@@ -7,13 +7,25 @@ from BikeRentalApi.models import AppUser
 
 @api_view(['POST'])
 def login(request):
-    return JsonResponse({'token': request.data['login']})
+    try:
+        user = User.objects.get(username = request.data['login'], password = request.data['password'])
+        return JsonResponse({'token': user.username})
+    except User.DoesNotExist:
+        return JsonResponse(status = 401, data = {'message': 'Bad credentials'})
 
 
 @api_view(['POST'])
 def register(request):
     username = request.data['login']
     password = request.data['password']
-    user = User.objects.create(username = username, password = password, email = f'{username}@bikes.com')
+
+    user, new = User.objects.get_or_create(username = username)
+    if not new:
+        return JsonResponse(status = 409, data = {'message': 'Conflicting registration data'})
+
+    user.password = password
+    user.email = f'{username}@bikes.com'
+    user.save()
+
     AppUser.objects.create(user = user)
     return JsonResponse({'token': username})
