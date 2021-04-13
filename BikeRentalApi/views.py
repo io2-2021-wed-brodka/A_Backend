@@ -1,7 +1,7 @@
 from rest_framework.exceptions import NotFound
 
 from .authentication import authenticate
-from .endpoints import bikesList, bikesDetail, stationsList, stationsDetail, bikesRented
+from .endpoints import bikesList, bikesDetail, stationsList, stationsDetail, bikesRented, stationsDetailBikes
 
 
 def bikes_list(request):
@@ -20,6 +20,17 @@ def bikes_detail(request, pk):
 
     if request.method == 'DELETE':
         return bikesDetail.delete(user, pk)
+
+    raise NotFound()
+
+
+def bikes_rented(request):
+    user = authenticate(request)
+
+    if request.method == 'GET':
+        return bikesRented.get(user)
+    elif request.method == 'POST':
+        return bikesRented.post(request, user)
 
     raise NotFound()
 
@@ -46,12 +57,12 @@ def stations_detail(request, pk):
     raise NotFound()
 
 
-def bikes_rented(request):
+def stations_detail_bikes(request, pk):
     user = authenticate(request)
 
     if request.method == 'GET':
-        return bikesRented.get(user)
+        return stationsDetailBikes.get(pk)
     elif request.method == 'POST':
-        return bikesRented.post(request, user)
+        return stationsDetailBikes.post(request, user, pk)
 
     raise NotFound()
