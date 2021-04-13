@@ -93,7 +93,7 @@ class TestBikesRentedViews:
                 'bike_state': 1,
                 'user': {
                     'id': user.pk,
-                    'name': 'Janek'
+                    'name': user.user.first_name
                 }
             }
         ]
@@ -125,7 +125,7 @@ class TestBikesRentedViews:
             'station': None,
             'bike_state': 1,
             'user': {
-                'id': user.id,
-                'name': 'Janek'
+                'id': user.pk,
+                'name': user.user.first_name
             }
         }

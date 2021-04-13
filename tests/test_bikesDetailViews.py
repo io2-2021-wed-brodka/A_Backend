@@ -1,6 +1,5 @@
 import pytest
 from django.contrib.auth.models import User
-from django.http import Http404
 from rest_framework.test import APIRequestFactory
 from rest_framework.utils import json
 
@@ -11,7 +10,7 @@ from BikeRentalApi.views import bikes_detail
 
 
 @pytest.mark.django_db
-class TestBikesListViews:
+class TestBikesDetailViews:
 
     @pytest.fixture
     def tech(self):
@@ -77,20 +76,25 @@ class TestBikesListViews:
         request = factory.delete(f'/api/bikes/{420}')
         request.user = admin.user
 
-        with pytest.raises(Http404):
-            response = bikes_detail(request, 420)
+        response = bikes_detail(request, 420)
+
+        assert response.status_code == 404
 
     def test_delete_bikes_detail_admin_response(self, factory, bike2, admin):
         request = factory.delete(f'/api/bikes/{bike2.pk}')
         request.user = admin.user
 
+        bike_id = bike2.pk
+        station_id = bike2.station.id
+        station_name = bike2.station.name
+
         response = bikes_detail(request, bike2.pk)
 
         assert json.loads(response.content) == {
-            'id': 8,
+            'id': bike_id,
             'station': {
-                'id': 8,
-                'name': 'Test station'
+                'id': station_id,
+                'name': station_name
             },
             'bike_state': 0,
             'user': None

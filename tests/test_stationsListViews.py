@@ -10,7 +10,7 @@ from BikeRentalApi.views import stations_list
 
 
 @pytest.mark.django_db
-class TestBikesListViews:
+class TestStationsListViews:
 
     @pytest.fixture
     def tech(self):
@@ -74,8 +74,8 @@ class TestBikesListViews:
         response = stations_list(request)
         assert json.loads(response.content) == [
             {
-                'id': 27,
-                'name': 'Test station'
+                'id': station.pk,
+                'name': station.name
             }
         ]
 
@@ -104,12 +104,13 @@ class TestBikesListViews:
         assert response.status_code == 201
 
     def test_post_stations_list_admin_response(self, factory, admin):
-        body = json.dumps({'name': 'New station'})
+        name = 'New station'
+        body = json.dumps({'name': name})
         request = factory.post('/api/stations', content_type = 'application/json', data = body)
         request.user = admin.user
 
         response = stations_list(request)
         assert json.loads(response.content) == {
-            'id': 29,
-            'name': 'New station'
+            'id': 30,
+            'name': name
         }
