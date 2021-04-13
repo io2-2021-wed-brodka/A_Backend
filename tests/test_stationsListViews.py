@@ -47,14 +47,14 @@ class TestStationsListViews:
 
     def test_get_stations_list_user_status(self, factory, user):
         request = factory.get('/api/stations')
-        request.user = user.user
+        request.headers = {'Authorization': f'Bearer {user.user.username}'}
 
         response = stations_list(request)
         assert response.status_code == 200
 
     def test_get_stations_list_tech_status(self, factory, tech):
         request = factory.get('/api/stations')
-        request.user = tech.user
+        request.headers = {'Authorization': f'Bearer {tech.user.username}'}
 
         response = stations_list(request)
 
@@ -62,14 +62,14 @@ class TestStationsListViews:
 
     def test_get_stations_list_admin_status(self, factory, admin):
         request = factory.get('/api/stations')
-        request.user = admin.user
+        request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = stations_list(request)
         assert response.status_code == 200
 
     def test_get_stations_list_response(self, user, factory, station):
         request = factory.get('/api/stations')
-        request.user = user.user
+        request.headers = {'Authorization': f'Bearer {user.user.username}'}
 
         response = stations_list(request)
         assert json.loads(response.content) == [
@@ -82,7 +82,9 @@ class TestStationsListViews:
     def test_post_stations_list_user_status(self, factory, user):
         body = json.dumps({'name': 'New station'})
         request = factory.post('/api/stations', content_type = 'application/json', data = body)
-        request.user = user.user
+        headers = {'Authorization': f'Bearer {user.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
 
         response = stations_list(request)
         assert response.status_code == 401
@@ -90,7 +92,9 @@ class TestStationsListViews:
     def test_post_stations_list_tech_status(self, factory, tech):
         body = json.dumps({'name': 'New station'})
         request = factory.post('/api/stations', content_type = 'application/json', data = body)
-        request.user = tech.user
+        headers = {'Authorization': f'Bearer {tech.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
 
         response = stations_list(request)
         assert response.status_code == 401
@@ -98,7 +102,9 @@ class TestStationsListViews:
     def test_post_stations_list_admin_status(self, factory, admin):
         body = json.dumps({'name': 'New station'})
         request = factory.post('/api/stations', content_type = 'application/json', data = body)
-        request.user = admin.user
+        headers = {'Authorization': f'Bearer {admin.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
 
         response = stations_list(request)
         assert response.status_code == 201
@@ -107,7 +113,9 @@ class TestStationsListViews:
         name = 'New station'
         body = json.dumps({'name': name})
         request = factory.post('/api/stations', content_type = 'application/json', data = body)
-        request.user = admin.user
+        headers = {'Authorization': f'Bearer {admin.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
 
         response = stations_list(request)
         data = json.loads(response.content)

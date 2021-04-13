@@ -36,6 +36,7 @@ def post(request, user):
 
     bike.bike_state = BikeState.InService
     bike.station = None
+    bike.save()
 
     rental = Rental()
     rental.bike = bike

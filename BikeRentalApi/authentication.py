@@ -1,19 +1,25 @@
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, NotAuthenticated, AuthenticationFailed
 from rest_framework.request import Request
 
 from BikeRentalApi.enums import Role
-from BikeRentalApi.models import Person, AppUser, Admin, Tech
+from BikeRentalApi.models import Person, User, Admin, Tech, AppUser
 
 
-# for now this uses basic auth, but may be changed to JWT in the future and become a little more complex then
-def authenticate(request: Request):
-    user = request.user
+def authenticate_bikes_user(request: Request):
+    if 'Authorization' not in request.headers.keys():
+        raise NotAuthenticated('No authorization header')
+
+    auth_str_split = str(request.headers['Authorization']).split(' ')
+    if len(auth_str_split) != 2:
+        raise AuthenticationFailed('Incorrect authorization header')
+
+    token = auth_str_split[1]
     try:
-        person = Person.objects.get(user = user)
+        person = User.objects.get(username = token).person
         if person.role == Role.Admin:
-            return Admin.objects.get(user = user)
+            return Admin.objects.get(id = person.id)
         elif person.role == Role.Tech:
-            return Tech.objects.get(user = user)
-        return AppUser.objects.get(user = user)
+            return Tech.objects.get(id = person.id)
+        return AppUser.objects.get(id = person.id)
     except Person.DoesNotExist:
         raise PermissionDenied()

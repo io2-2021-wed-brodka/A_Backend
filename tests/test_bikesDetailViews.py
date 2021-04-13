@@ -51,38 +51,35 @@ class TestBikesDetailViews:
 
     def test_delete_bikes_detail_user_status(self, factory, bike, user):
         request = factory.delete(f'/api/bikes/{bike.pk}')
-        request.user = user.user
+        request.headers = {'Authorization': f'Bearer {user.user.username}'}
 
         response = bikes_detail(request, bike.pk)
         assert response.status_code == 401
 
     def test_delete_bikes_detail_tech_status(self, factory, bike, tech):
         request = factory.delete(f'/api/bikes/{bike.pk}')
-        request.user = tech.user
+        request.headers = {'Authorization': f'Bearer {tech.user.username}'}
 
         response = bikes_detail(request, bike.pk)
-
         assert response.status_code == 401
 
     def test_delete_bikes_detail_admin_status(self, factory, bike, admin):
         request = factory.delete(f'/api/bikes/{bike.pk}')
-        request.user = admin.user
+        request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = bikes_detail(request, bike.pk)
-
         assert response.status_code == 200
 
     def test_delete_bikes_detail_admin_bad_request(self, factory, admin):
         request = factory.delete(f'/api/bikes/{420}')
-        request.user = admin.user
+        request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = bikes_detail(request, 420)
-
         assert response.status_code == 404
 
     def test_delete_bikes_detail_admin_response(self, factory, bike2, admin):
         request = factory.delete(f'/api/bikes/{bike2.pk}')
-        request.user = admin.user
+        request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         bike_id = bike2.pk
         station_id = bike2.station.id

@@ -1,11 +1,12 @@
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.exceptions import NotFound
 
-from .authentication import authenticate
+from .authentication import authenticate_bikes_user
 from .endpoints import bikesList, bikesDetail, stationsList, stationsDetail, bikesRented, stationsDetailBikes
 
 
 def bikes_list(request):
-    user = authenticate(request)
+    user = authenticate_bikes_user(request)
 
     if request.method == 'GET':
         return bikesList.get(user)
@@ -16,7 +17,7 @@ def bikes_list(request):
 
 
 def bikes_detail(request, pk):
-    user = authenticate(request)
+    user = authenticate_bikes_user(request)
 
     if request.method == 'DELETE':
         return bikesDetail.delete(user, pk)
@@ -24,8 +25,9 @@ def bikes_detail(request, pk):
     raise NotFound()
 
 
+@csrf_exempt
 def bikes_rented(request):
-    user = authenticate(request)
+    user = authenticate_bikes_user(request)
 
     if request.method == 'GET':
         return bikesRented.get(user)
@@ -36,7 +38,7 @@ def bikes_rented(request):
 
 
 def stations_list(request):
-    user = authenticate(request)
+    user = authenticate_bikes_user(request)
 
     if request.method == 'GET':
         return stationsList.get()
@@ -47,7 +49,7 @@ def stations_list(request):
 
 
 def stations_detail(request, pk):
-    user = authenticate(request)
+    user = authenticate_bikes_user(request)
 
     if request.method == 'GET':
         return stationsDetail.get(pk)
@@ -57,8 +59,9 @@ def stations_detail(request, pk):
     raise NotFound()
 
 
+@csrf_exempt
 def stations_detail_bikes(request, pk):
-    user = authenticate(request)
+    user = authenticate_bikes_user(request)
 
     if request.method == 'GET':
         return stationsDetailBikes.get(pk)
