@@ -12,4 +12,7 @@ class RentBikeSerializer(serializers.ModelSerializer):
         fields = ['id']
 
     def create(self, validated_data):
-        return Bike.objects.get(id = validated_data['id'])
+        try:
+            return Bike.objects.get(id = validated_data['id'])
+        except Bike.DoesNotExist:
+            return None
