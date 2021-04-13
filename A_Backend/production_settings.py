@@ -1,4 +1,5 @@
-from .common_settings import *
+from .common_settings import * # noqa
+from .common_settings import BASE_DIR
 import os
 
 DEBUG = False
@@ -17,4 +18,3 @@ ALLOWED_HOSTS = ['.herokuapp.com']
 SECURE_HSTS_SECONDS = 3600
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
-
