@@ -122,10 +122,8 @@ class TestBikesListViews:
         data = json.loads(response.content)
 
         assert isinstance(data['id'], int) \
-               and data['station'] == {
-                   "id": station.pk,
-                   "name": station.name
-               } and data['bike_state'] == BikeState.Working \
+               and data['station'] == {"id": station.pk, "name": station.name} \
+               and data['bike_state'] == BikeState.Working \
                and data['user'] is None \
                and set(data.keys()) == {'id', 'station', 'bike_state', 'user'}
 
