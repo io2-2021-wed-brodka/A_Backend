@@ -8,7 +8,9 @@ from BikeRentalApi.models import AppUser
 
 @api_view(['POST'])
 def login(request):
+    print(request.headers)
     user = authenticate(request, username = request.data['login'], password = request.data['password'])
+    print(user)
     if not user:
         return JsonResponse(status = 401, data = {'message': 'Bad credentials'})
     return JsonResponse({'token': user.username})
