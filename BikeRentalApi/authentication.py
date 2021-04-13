@@ -5,7 +5,7 @@ from BikeRentalApi.enums import Role
 from BikeRentalApi.models import Person, User, Admin, Tech, AppUser
 
 
-def authenticate(request: Request):
+def authenticate_bikes_user(request: Request):
     if 'Authorization' not in request.headers.keys():
         raise NotAuthenticated('No authorization header')
 

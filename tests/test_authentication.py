@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.test import RequestFactory
 from rest_framework.exceptions import PermissionDenied
 
-from BikeRentalApi.authentication import authenticate
+from BikeRentalApi.authentication import authenticate_bikes_user
 from BikeRentalApi.models import Tech
 
 
@@ -25,9 +25,9 @@ class TestAuthentication:
 
     def test_raises_permission_denied_for_user_not_int_db(self, authenticated_request, auth_user):
         with pytest.raises(PermissionDenied):
-            authenticate(authenticated_request)
+            authenticate_bikes_user(authenticated_request)
 
     def test_returns_authorized_user(self, authenticated_request, auth_user):
         tech = Tech.objects.create(user = auth_user)
-        target_user = authenticate(authenticated_request)
+        target_user = authenticate_bikes_user(authenticated_request)
         assert target_user == tech
