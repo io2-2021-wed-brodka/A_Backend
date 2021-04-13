@@ -1,12 +1,14 @@
+import io
+
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
-from rest_framework.exceptions import PermissionDenied, NotFound
+from rest_framework.exceptions import NotFound
 from rest_framework import status
 
 from BikeRentalApi.models import Bike, Rental, BikeStation
+from BikeRentalApi.serializers.addBikeStationSerializer import AddBikeStationSerializer
 from BikeRentalApi.serializers.bikeSerializer import BikeSerializer
 from BikeRentalApi.serializers.stationSerializer import StationSerializer
 from BikeRentalApi.serializers.rentBikeSerializer import RentBikeSerializer
@@ -28,29 +30,42 @@ def bikes_list(request):
         if user.role != Role.Admin:
             return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_401_UNAUTHORIZED)
 
-        serializer = BikeSerializer(data = request.data)
+        stream = io.BytesIO(request.body)
+        serializer = AddBikeStationSerializer(data = JSONParser().parse(stream))
 
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, safe = False, status = status.HTTP_201_CREATED)
+        if not serializer.is_valid():
+            return JsonResponse({}, status = status.HTTP_400_BAD_REQUEST)
 
-    return JsonResponse({}, status = status.HTTP_404_NOT_FOUND)
+        station = serializer.create(serializer.validated_data)
+
+        if station is None:
+            return JsonResponse({}, status = status.HTTP_404_NOT_FOUND)
+
+        bike = Bike()
+        bike.bike_state = BikeState.Working
+        bike.station = station
+        bike.save()
+
+        return JsonResponse(BikeSerializer(bike).data, safe = False, status = status.HTTP_201_CREATED)
+
+    raise NotFound()
 
 
 def bikes_detail(request, pk):
     user = authenticate(request)
 
     if request.method == 'DELETE':
-        if user.Role != Role.Admin:
+        if user.role != Role.Admin:
             return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_401_UNAUTHORIZED)
 
         bike = get_object_or_404(Bike, pk = pk)
-        serializer = BikeSerializer(bike)
+        data = BikeSerializer(bike).data
+
         bike.delete()
 
-        return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
+        return JsonResponse(data, safe = False, status = status.HTTP_200_OK)
 
-    return JsonResponse({}, status = status.HTTP_404_NOT_FOUND)
+    raise NotFound()
 
 
 def stations_list(request):
@@ -62,16 +77,18 @@ def stations_list(request):
         return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
     elif request.method == 'POST':
         if user.role != Role.Admin:
-            raise PermissionDenied()
+            return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_401_UNAUTHORIZED)
 
-        data = JSONParser().parse(request)
-        serializer = StationSerializer(data = data)
+        stream = io.BytesIO(request.body)
+        serializer = StationSerializer(data = JSONParser().parse(stream))
 
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, safe = False, status = status.HTTP_201_CREATED)
+        if not serializer.is_valid():
+            return JsonResponse({}, status = status.HTTP_400_BAD_REQUEST)
 
-    return JsonResponse({}, status = status.HTTP_404_NOT_FOUND)
+        serializer.save()
+        return JsonResponse(serializer.data, safe = False, status = status.HTTP_201_CREATED)
+
+    raise NotFound()
 
 
 def station_detail(request, pk):
@@ -84,15 +101,19 @@ def station_detail(request, pk):
         return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
     elif request.method == 'DELETE':
         if user.role != Role.Admin:
-            raise PermissionDenied()
+            return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_401_UNAUTHORIZED)
 
         station = get_object_or_404(BikeStation, pk = pk)
-        serializer = StationSerializer(station)
+
+        if Bike.objects.filter(station_id__exact = station.pk).count() > 0:
+            return JsonResponse({'message': 'Station has bikes in it'}, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+        data = StationSerializer(station).data
         station.delete()
 
-        return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
+        return JsonResponse(data, safe = False, status = status.HTTP_200_OK)
 
-    return JsonResponse({}, status = status.HTTP_404_NOT_FOUND)
+    raise NotFound()
 
 
 def bikes_rented(request):
@@ -105,12 +126,20 @@ def bikes_rented(request):
 
         return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
     elif request.method == 'POST':
-        serializer = RentBikeSerializer(data = request.data)
+        stream = io.BytesIO(request.body)
+        serializer = RentBikeSerializer(data = JSONParser().parse(stream))
 
         if not serializer.is_valid():
-            raise NotFound()
+            return JsonResponse({}, status = status.HTTP_400_BAD_REQUEST)
 
         bike = serializer.create(serializer.validated_data)
+
+        if bike is None:
+            return JsonResponse({'message': 'Bike not found'}, status = status.HTTP_404_NOT_FOUND)
+
+        if bike.bike_state == BikeState.InService:
+            return JsonResponse({'message': 'Bike is already rented'}, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
+
         bike.bike_state = BikeState.InService
         bike.station = None
 
@@ -120,10 +149,9 @@ def bikes_rented(request):
         rental.start_date = timezone.now()
         rental.end_date = rental.start_date + timezone.timedelta(minutes = 30)
 
-        bike.save()
         rental.save()
 
         serializer = BikeSerializer(bike)
         return JsonResponse(serializer.data, safe = False, status = status.HTTP_201_CREATED)
 
-    return JsonResponse({}, status = status.HTTP_404_NOT_FOUND)
+    raise NotFound()
