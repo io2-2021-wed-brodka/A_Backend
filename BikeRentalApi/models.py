@@ -6,11 +6,11 @@ from BikeRentalApi.enums import BikeState, StationState, Role, UserState
 
 
 class Person(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete = models.CASCADE)
     role = enum.EnumField(Role, default = Role.User)
 
     def __str__(self):
-        return f'{self.user.first_name} {self.user.last_name}'
+        return f'{self.user.username}'
 
 
 class Admin(Person):
@@ -27,6 +27,10 @@ class Tech(Person):
 
 class AppUser(Person):
     state = enum.EnumField(UserState, default = UserState.Active)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.role = Role.User
 
 
 class BikeStation(models.Model):

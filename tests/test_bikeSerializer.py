@@ -1,6 +1,7 @@
 from datetime import date, time, datetime
-from django.utils import timezone
+
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 import pytest
 
@@ -30,7 +31,8 @@ class TestBikeSerializer:
         rental_end_time = time(12, 55)
         rental_start_datetime = datetime.combine(rental_date, rental_start_time, tzinfo = timezone.utc)
         rental_end_datetime = datetime.combine(rental_date, rental_end_time, tzinfo = timezone.utc)
-        Rental.objects.create(user = user, bike = bike, start_date = rental_start_datetime, end_date = rental_end_datetime)
+        Rental.objects.create(user = user, bike = bike, start_date = rental_start_datetime,
+                              end_date = rental_end_datetime)
         return bike
 
     @pytest.fixture()

@@ -1,7 +1,5 @@
 import pytest
-
 from django.contrib.auth.models import User
-
 from BikeRentalApi.models import AppUser
 from BikeRentalApi.serializers.userSerializer import UserSerializer
 
