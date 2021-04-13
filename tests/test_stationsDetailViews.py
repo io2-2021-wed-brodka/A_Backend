@@ -130,6 +130,6 @@ class TestStationsDetailViews:
         response = stations_detail(request, empty_station.pk)
 
         assert json.loads(response.content) == {
-                'id': empty_station.id,
-                'name': empty_station.name
-            }
+            'id': empty_station.id,
+            'name': empty_station.name
+        }
