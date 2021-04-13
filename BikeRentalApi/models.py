@@ -38,7 +38,7 @@ class BikeStation(models.Model):
     state = enum.EnumField(StationState, default = StationState.Working)
 
     def __str__(self):
-        return 'station ' + self.location_name
+        return 'station ' + self.name
 
 
 class Bike(models.Model):

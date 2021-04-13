@@ -2,6 +2,7 @@ from datetime import date, time, datetime
 
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 import pytest
 
@@ -17,8 +18,8 @@ class TestBikeSerializer:
     @pytest.fixture()
     def user(self):
         user = User.objects.create(
-            username = 'Mariusz', first_name = 'Mariusz', last_name = 'Tester', email = 'Janek@test.com',
-            password = 'test1234'
+            username = 'Mariusz', first_name = 'Mariusz', last_name = 'Tester', email = 'mariusz@test.com',
+            password = 'test123'
         )
         return AppUser.objects.create(user = user)
 
