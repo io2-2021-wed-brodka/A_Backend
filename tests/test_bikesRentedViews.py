@@ -62,28 +62,28 @@ class TestBikesRentedViews:
 
     def test_get_bikes_rented_status_user(self, user, factory):
         request = factory.get('/api/bikes/rented')
-        request.user = user.user
+        request.headers = {'Authorization': f'Bearer {user.user.username}'}
 
         response = bikes_rented(request)
         assert response.status_code == 200
 
     def test_get_bikes_rented_status_tech(self, tech, factory):
         request = factory.get('/api/bikes/rented')
-        request.user = tech.user
+        request.headers = {'Authorization': f'Bearer {tech.user.username}'}
 
         response = bikes_rented(request)
         assert response.status_code == 200
 
     def test_get_bikes_rented_status_admin(self, admin, factory):
         request = factory.get('/api/bikes/rented')
-        request.user = admin.user
+        request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = bikes_rented(request)
         assert response.status_code == 200
 
     def test_get_bikes_rented_response(self, user, factory, bike1, station):
         request = factory.get('/api/bikes/rented')
-        request.user = user.user
+        request.headers = {'Authorization': f'Bearer {user.user.username}'}
 
         response = bikes_rented(request)
         assert json.loads(response.content) == [
@@ -101,7 +101,9 @@ class TestBikesRentedViews:
     def test_post_bikes_rented_user_status(self, user, bike2, factory):
         body = json.dumps({"id": bike2.pk})
         request = factory.post('api/bikes/rented', content_type = 'application/json', data = body)
-        request.user = user.user
+        headers = {'Authorization': f'Bearer {user.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
 
         response = bikes_rented(request)
         assert response.status_code == 201
@@ -109,7 +111,9 @@ class TestBikesRentedViews:
     def test_post_bikes_rented_bad_request(self, user, factory):
         body = json.dumps({"id": 1337})
         request = factory.post('api/bikes/rented', content_type = 'application/json', data = body)
-        request.user = user.user
+        headers = {'Authorization': f'Bearer {user.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
 
         response = bikes_rented(request)
         assert response.status_code == 404
@@ -117,7 +121,9 @@ class TestBikesRentedViews:
     def test_post_bikes_rented_response(self, user, station, bike2, factory):
         body = json.dumps({"id": bike2.pk})
         request = factory.post('api/bikes/rented', content_type = 'application/json', data = body)
-        request.user = user.user
+        headers = {'Authorization': f'Bearer {user.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
 
         response = bikes_rented(request)
         assert json.loads(response.content) == {

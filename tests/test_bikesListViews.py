@@ -47,14 +47,14 @@ class TestBikesListViews:
 
     def test_get_bikes_list_user_status(self, factory, user):
         request = factory.get('/api/bikes')
-        request.user = user.user
+        request.headers = {'Authorization': f'Bearer {user.user.username}'}
 
         response = bikes_list(request)
         assert response.status_code == 401
 
     def test_get_bikes_list_tech_status(self, factory, tech):
         request = factory.get('/api/bikes')
-        request.user = tech.user
+        request.headers = {'Authorization': f'Bearer {tech.user.username}'}
 
         response = bikes_list(request)
 
@@ -62,7 +62,7 @@ class TestBikesListViews:
 
     def test_get_bikes_list_tech_body(self, factory, user, station, bike, tech):
         request = factory.get('api/bikes')
-        request.user = tech.user
+        request.headers = {'Authorization': f'Bearer {tech.user.username}'}
 
         response = bikes_list(request)
 
@@ -81,7 +81,9 @@ class TestBikesListViews:
     def test_post_bikes_list_user_status(self, factory, station, user):
         body = json.dumps({'id': station.id})
         request = factory.post('/api/bikes', content_type = 'application/json', data = body)
-        request.user = user.user
+        headers = {'Authorization': f'Bearer {user.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
 
         response = bikes_list(request)
 
@@ -90,7 +92,9 @@ class TestBikesListViews:
     def test_post_bikes_list_tech_status(self, factory, station, tech):
         body = json.dumps({'id': station.id})
         request = factory.post('/api/bikes', content_type = 'application/json', data = body)
-        request.user = tech.user
+        headers = {'Authorization': f'Bearer {tech.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
 
         response = bikes_list(request)
 
@@ -99,7 +103,9 @@ class TestBikesListViews:
     def test_post_bikes_list_admin_status(self, factory, station, admin):
         body = json.dumps({'id': station.id})
         request = factory.post('/api/bikes', content_type = 'application/json', data = body)
-        request.user = admin.user
+        headers = {'Authorization': f'Bearer {admin.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
 
         response = bikes_list(request)
 
@@ -108,23 +114,27 @@ class TestBikesListViews:
     def test_post_bikes_list_admin_response(self, factory, station, admin):
         body = json.dumps({'id': station.pk})
         request = factory.post('/api/bikes', content_type = 'application/json', data = body)
-        request.user = admin.user
+        headers = {'Authorization': f'Bearer {admin.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
 
         response = bikes_list(request)
         data = json.loads(response.content)
 
         assert isinstance(data['id'], int) \
-            and data['station'] == {
-                "id": station.pk,
-                "name": station.name
-        } and data['bike_state'] == BikeState.Working \
-            and data['user'] is None \
-            and set(data.keys()) == {'id', 'station', 'bike_state', 'user'}
+               and data['station'] == {
+                   "id": station.pk,
+                   "name": station.name
+               } and data['bike_state'] == BikeState.Working \
+               and data['user'] is None \
+               and set(data.keys()) == {'id', 'station', 'bike_state', 'user'}
 
     def test_post_bikes_list_bad_request_status(self, factory, admin):
         body = json.dumps({'id': 2137})
         request = factory.post('/api/bikes', content_type = 'application/json', data = body)
-        request.user = admin.user
+        headers = {'Authorization': f'Bearer {admin.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
 
         response = bikes_list(request)
 

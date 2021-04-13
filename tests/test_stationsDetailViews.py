@@ -51,14 +51,14 @@ class TestStationsDetailViews:
 
     def test_get_stations_detail_user_status(self, factory, station, user):
         request = factory.get(f'/api/stations/{station.pk}')
-        request.user = user.user
+        request.headers = {'Authorization': f'Bearer {user.user.username}'}
 
         response = stations_detail(request, station.pk)
         assert response.status_code == 200
 
     def test_get_stations_detail_tech_status(self, factory, station, tech):
         request = factory.get(f'/api/stations/{station.pk}')
-        request.user = tech.user
+        request.headers = {'Authorization': f'Bearer {tech.user.username}'}
 
         response = stations_detail(request, station.pk)
 
@@ -66,7 +66,7 @@ class TestStationsDetailViews:
 
     def test_get_stations_detail_admin_status(self, factory, station, admin):
         request = factory.get(f'/api/stations/{station.pk}')
-        request.user = admin.user
+        request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = stations_detail(request, station.pk)
 
@@ -74,7 +74,7 @@ class TestStationsDetailViews:
 
     def test_get_stations_detail_response(self, factory, station, user):
         request = factory.get(f'/api/stations/{station.pk}')
-        request.user = user.user
+        request.headers = {'Authorization': f'Bearer {user.user.username}'}
 
         response = stations_detail(request, station.pk)
 
@@ -85,7 +85,7 @@ class TestStationsDetailViews:
 
     def test_delete_stations_detail_user_status(self, factory, station, user):
         request = factory.delete(f'/api/stations/{station.pk}')
-        request.user = user.user
+        request.headers = {'Authorization': f'Bearer {user.user.username}'}
 
         response = stations_detail(request, station.pk)
 
@@ -93,7 +93,7 @@ class TestStationsDetailViews:
 
     def test_delete_stations_detail_tech_status(self, factory, station, tech):
         request = factory.delete(f'/api/stations/{station.pk}')
-        request.user = tech.user
+        request.headers = {'Authorization': f'Bearer {tech.user.username}'}
 
         response = stations_detail(request, station.pk)
 
@@ -101,7 +101,7 @@ class TestStationsDetailViews:
 
     def test_delete_stations_detail_admin_status(self, factory, station, admin):
         request = factory.delete(f'/api/stations/{station.pk}')
-        request.user = admin.user
+        request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = stations_detail(request, station.pk)
 
@@ -109,7 +109,7 @@ class TestStationsDetailViews:
 
     def test_delete_stations_detail_admin_bad_request(self, factory, admin):
         request = factory.delete(f'/api/bikes/{420}')
-        request.user = admin.user
+        request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = stations_detail(request, 420)
 
@@ -117,7 +117,7 @@ class TestStationsDetailViews:
 
     def test_delete_stations_detail_admin_not_empty(self, factory, station, bike, admin):
         request = factory.delete(f'/api/stations/{station.pk}')
-        request.user = admin.user
+        request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = stations_detail(request, station.pk)
 
@@ -125,7 +125,7 @@ class TestStationsDetailViews:
 
     def test_delete_stations_detail_admin_response(self, factory, empty_station, admin):
         request = factory.delete(f'/api/stations/{empty_station.pk}')
-        request.user = admin.user
+        request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = stations_detail(request, empty_station.pk)
 
