@@ -11,6 +11,6 @@ urlpatterns = [
     path('stations/', stations_list, name = 'station_list'),
     path('stations/<int:pk>/', stations_detail, name = 'station_detail'),
     path('stations/<int:pk>/bikes/', stations_detail_bikes, name = 'station_detail_bikes'),
-    path('register', auth_views.register, name = 'register'),
-    path('login', auth_views.login, name = 'login')
+    path('register/', auth_views.register, name = 'register'),
+    path('login/', auth_views.login, name = 'login')
 ]
