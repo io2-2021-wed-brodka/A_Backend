@@ -24,10 +24,14 @@ def post(request, user, pk):
         return JsonResponse({}, status = status.HTTP_400_BAD_REQUEST)
 
     bike = serializer.create(serializer.validated_data)
+
+    if bike is None:
+        return JsonResponse({"message": "Bike not found"}, status = status.HTTP_404_NOT_FOUND)
+
     station = BikeStation.objects.filter(pk = pk).first()
 
-    if station is None or bike is None:
-        return JsonResponse({"message": "Not found"}, status = status.HTTP_404_NOT_FOUND)
+    if station is None:
+        return JsonResponse({"message": "Station not found"}, status = status.HTTP_404_NOT_FOUND)
 
     rental = Rental.objects.filter(user = user, bike = bike)
 
