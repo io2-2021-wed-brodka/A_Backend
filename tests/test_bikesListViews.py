@@ -73,7 +73,7 @@ class TestBikesListViews:
                     'id': station.pk,
                     'name': 'Test station'
                 },
-                'bike_state': 0,
+                'bike_state': BikeState.Working,
                 'user': None
             }
         ]
@@ -111,16 +111,15 @@ class TestBikesListViews:
         request.user = admin.user
 
         response = bikes_list(request)
+        data = json.loads(response.content)
 
-        assert json.loads(response.content) == {
-            "id": 11,
-            "station": {
+        assert isinstance(data['id'], int) \
+            and data['station'] == {
                 "id": station.pk,
                 "name": station.name
-            },
-            "bike_state": 0,
-            "user": None
-        }
+        } and data['bike_state'] == BikeState.Working \
+            and data['user'] is None \
+            and set(data.keys()) == {'id', 'station', 'bike_state', 'user'}
 
     def test_post_bikes_list_bad_request_status(self, factory, admin):
         body = json.dumps({'id': 2137})

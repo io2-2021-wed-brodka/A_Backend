@@ -100,7 +100,7 @@ class TestStationsDetailViews:
             {
                 'id': bike.pk,
                 'user': None,
-                'bike_state': 0,
+                'bike_state': BikeState.Working,
                 'station': {
                     'id': station.pk,
                     'name': station.name
@@ -124,7 +124,7 @@ class TestStationsDetailViews:
         response = stations_detail_bikes(request, station.pk)
         assert json.loads(response.content) == {
             'id': bike_rented.pk,
-            'bike_state': 0,
+            'bike_state': BikeState.Working,
             'user': None,
             'station': {
                 'id': station.pk,

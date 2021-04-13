@@ -90,7 +90,7 @@ class TestBikesRentedViews:
             {
                 'id': bike1.pk,
                 'station': None,
-                'bike_state': 1,
+                'bike_state': BikeState.InService,
                 'user': {
                     'id': user.pk,
                     'name': user.user.first_name
@@ -123,7 +123,7 @@ class TestBikesRentedViews:
         assert json.loads(response.content) == {
             'id': bike2.pk,
             'station': None,
-            'bike_state': 1,
+            'bike_state': BikeState.InService,
             'user': {
                 'id': user.pk,
                 'name': user.user.first_name

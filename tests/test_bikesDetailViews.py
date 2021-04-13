@@ -96,6 +96,6 @@ class TestBikesDetailViews:
                 'id': station_id,
                 'name': station_name
             },
-            'bike_state': 0,
+            'bike_state': BikeState.Working,
             'user': None
         }

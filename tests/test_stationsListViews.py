@@ -110,7 +110,6 @@ class TestStationsListViews:
         request.user = admin.user
 
         response = stations_list(request)
-        assert json.loads(response.content) == {
-            'id': 40,
-            'name': name
-        }
+        data = json.loads(response.content)
+
+        assert isinstance(data['id'], int) and data['name'] == name and set(data.keys()) == {'id', 'name'}
