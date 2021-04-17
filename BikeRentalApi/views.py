@@ -2,7 +2,8 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.exceptions import NotFound
 
 from .authentication import authenticate_bikes_user
-from .endpoints import bikesList, bikesDetail, stationsList, stationsDetail, bikesRented, stationsDetailBikes, techsList
+from .endpoints import bikesList, bikesDetail, stationsList, stationsDetail, bikesRented, stationsDetailBikes, \
+    techsList, techsDetail
 
 
 def bikes_list(request):
@@ -18,7 +19,6 @@ def bikes_list(request):
 
 def bikes_detail(request, pk):
     user = authenticate_bikes_user(request)
-
     if request.method == 'DELETE':
         return bikesDetail.delete(user, pk)
 
@@ -78,4 +78,16 @@ def techs_list(request):
         return techsList.post(request, user)
     elif request.method == 'GET':
         return techsList.get(user)
+    raise NotFound()
+
+
+@csrf_exempt
+def techs_detail(request, pk):
+    user = authenticate_bikes_user(request)
+
+    if request.method == 'DELETE':
+        return techsDetail.delete(user, pk)
+    elif request.method == 'GET':
+        return techsDetail.get(user, pk)
+
     raise NotFound()
