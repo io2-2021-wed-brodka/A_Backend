@@ -29,9 +29,11 @@ def post(request, user):
     stream = io.BytesIO(request.body)
     data = JSONParser().parse(stream)
 
-    print(request)
-    username = data['name']
-    password = data['password']
+    try:
+        username = data['name']
+        password = data['password']
+    except KeyError:
+        return JsonResponse({"message": "Bad data"}, status = status.HTTP_400_BAD_REQUEST)
 
     try:
         User.objects.get(username = username)
@@ -40,4 +42,3 @@ def post(request, user):
         user = User.objects.create_user(username, f'{username}@bikes.com', password)
         tech = Tech.objects.create(user = user)
         return JsonResponse({'id': tech.pk, 'name': tech.user.username})
-

@@ -74,7 +74,6 @@ def stations_detail_bikes(request, pk):
 @csrf_exempt
 def techs_list(request):
     user = authenticate_bikes_user(request)
-
     if request.method == 'POST':
         return techsList.post(request, user)
     elif request.method == 'GET':
