@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from .common_settings import * # noqa
+from .common_settings import BASE_DIR, os
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -22,3 +23,11 @@ SECRET_KEY = '6fvq0sccaann8jr)4dg16qzip$(xr#rrop$wu#1cbh7m-$n=c+'
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
+if os.environ.get('BIKES_SQLITE'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
