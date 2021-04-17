@@ -23,3 +23,10 @@ SECRET_KEY = '6fvq0sccaann8jr)4dg16qzip$(xr#rrop$wu#1cbh7m-$n=c+'
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}

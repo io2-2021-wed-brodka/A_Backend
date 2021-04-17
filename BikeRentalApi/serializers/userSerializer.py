@@ -13,4 +13,4 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['name', 'id']
 
     def get_name(self, obj):
-        return obj.user.first_name
+        return obj.user.username
