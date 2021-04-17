@@ -16,8 +16,6 @@ def get(user):
 
     techs = Tech.objects.all()
     serializer = UserSerializer(techs, many = True)
-    # bikes = Bike.objects.all()
-    # serializer = BikeSerializer(bikes, many = True)
 
     return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
 
