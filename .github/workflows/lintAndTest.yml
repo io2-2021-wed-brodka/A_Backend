@@ -3,6 +3,9 @@ name: Django CI
 on:
   pull_request:
     branches: [ main, develop, feature/*, release/* ]
+  push:
+    branches: [ main ]
+
 
 jobs:
   lint-and-test:
@@ -45,7 +48,7 @@ jobs:
         run: pytest
   deploy:
     needs: lint-and-test
-    if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
