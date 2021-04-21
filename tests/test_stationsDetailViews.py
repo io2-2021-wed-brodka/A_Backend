@@ -41,7 +41,6 @@ class TestStationsDetailViews:
     def working_station(self):
         return BikeStation.objects.create(name = 'Test station', state = StationState.Working)
 
-
     @pytest.fixture
     def empty_station(self):
         return BikeStation.objects.create(name = 'Empty station', state = StationState.Blocked)
