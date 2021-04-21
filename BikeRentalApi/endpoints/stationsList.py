@@ -10,8 +10,8 @@ from BikeRentalApi.enums import Role
 
 
 def get():
-    bikes = BikeStation.objects.all()
-    serializer = StationSerializer(bikes, many = True)
+    stations = BikeStation.objects.all()
+    serializer = StationSerializer(stations, many = True)
 
     return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
 

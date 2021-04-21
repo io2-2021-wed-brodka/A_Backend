@@ -13,6 +13,7 @@ urlpatterns = [
     path('stations/<int:pk>/bikes/', stations_detail_bikes, name = 'station_detail_bikes'),
     path('register/', auth_views.register, name = 'register'),
     path('login/', auth_views.login, name = 'login'),
+    path('logout/', auth_views.logout, name = 'logout'),
     path('techs/', techs_list, name = 'techs_list'),
     path('techs/<int:pk>', techs_detail, name = 'techs_detail'),
 ]

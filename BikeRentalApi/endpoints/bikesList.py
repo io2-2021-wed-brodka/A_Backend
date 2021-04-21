@@ -5,7 +5,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework import status
 
 from BikeRentalApi.models import Bike
-from BikeRentalApi.serializers.addBikeStationSerializer import AddBikeStationSerializer
+from BikeRentalApi.serializers.addBikeToTheStationSerializer import AddBikeStationSerializer
 from BikeRentalApi.serializers.bikeSerializer import BikeSerializer
 from BikeRentalApi.enums import Role, BikeState
 

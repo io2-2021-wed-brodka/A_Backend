@@ -35,11 +35,15 @@ class TestStationsDetailViews:
 
     @pytest.fixture
     def station(self):
+        return BikeStation.objects.create(name = 'Test station', state = StationState.Blocked)
+
+    @pytest.fixture
+    def working_station(self):
         return BikeStation.objects.create(name = 'Test station', state = StationState.Working)
 
     @pytest.fixture
     def empty_station(self):
-        return BikeStation.objects.create(name = 'Empty station', state = StationState.Working)
+        return BikeStation.objects.create(name = 'Empty station', state = StationState.Blocked)
 
     @pytest.fixture
     def bike(self, user, station):
@@ -114,6 +118,14 @@ class TestStationsDetailViews:
         response = stations_detail(request, 420)
 
         assert response.status_code == 404
+
+    def test_delete_stations_detail_admin_working_station(self, factory, admin, working_station):
+        request = factory.delete(f'/api/stations/{working_station.pk}')
+        request.headers = {'Authorization': f'Bearer {admin.user.username}'}
+
+        response = stations_detail(request, working_station.pk)
+
+        assert response.status_code == 422
 
     def test_delete_stations_detail_admin_not_empty(self, factory, station, bike, admin):
         request = factory.delete(f'/api/stations/{station.pk}')
