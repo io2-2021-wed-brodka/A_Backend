@@ -6,7 +6,6 @@ from .endpoints import bikesList, bikesDetail, stationsList, stationsDetail, bik
     techsList, techsDetail, stationsBlocked, stationsDetailsBlocked, bikesBlocked, bikesUnblocked
 
 
-
 @csrf_exempt
 def bikes_list(request):
     user = authenticate_bikes_user(request)

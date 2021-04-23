@@ -38,7 +38,7 @@ def post(request, user):
     if station.state == StationState.Blocked:
         return JsonResponse({"message": "Station already blocked"},
                             status = status.HTTP_422_UNPROCESSABLE_ENTITY)
-    
+
     station.state = StationState.Blocked
     station.save()
 

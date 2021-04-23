@@ -1,5 +1,6 @@
 import pytest
 from django.contrib.auth.models import User
+from rest_framework import status
 from rest_framework.test import APIRequestFactory
 from rest_framework.utils import json
 
@@ -54,7 +55,7 @@ class TestStationsListViews:
         request.headers = {'Authorization': f'Bearer {user.user.username}'}
 
         response = stations_blocked(request)
-        assert response.status_code == 403
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_get_stations_blocked_tech_status(self, factory, tech):
         request = factory.get('/api/stations/blocked')
@@ -62,14 +63,14 @@ class TestStationsListViews:
 
         response = stations_blocked(request)
 
-        assert response.status_code == 403
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_get_stations_blocked_admin_status(self, factory, admin):
         request = factory.get('/api/stations/blocked')
         request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = stations_blocked(request)
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
     def test_get_stations_blocked_response(self, admin, factory, station_blocked):
         request = factory.get('/api/stations/blocked')
@@ -91,7 +92,7 @@ class TestStationsListViews:
         request.headers = headers
 
         response = stations_blocked(request)
-        assert response.status_code == 403
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_post_stations_blocked_tech_status(self, factory, tech, station_working):
         body = json.dumps({'id': station_working.pk})
@@ -101,7 +102,7 @@ class TestStationsListViews:
         request.headers = headers
 
         response = stations_blocked(request)
-        assert response.status_code == 403
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_post_stations_blocked_admin_status(self, factory, admin, station_working):
         body = json.dumps({'id': station_working.pk})
@@ -111,7 +112,7 @@ class TestStationsListViews:
         request.headers = headers
 
         response = stations_blocked(request)
-        assert response.status_code == 201
+        assert response.status_code == status.HTTP_201_CREATED
 
     def test_post_stations_blocked_on_blocked(self, factory, admin, station_blocked):
         body = json.dumps({'id': station_blocked.pk})
@@ -121,7 +122,7 @@ class TestStationsListViews:
         request.headers = headers
 
         response = stations_blocked(request)
-        assert response.status_code == 422
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     def test_post_stations_blocked_response(self, factory, admin, station_working):
         body = json.dumps({'id': station_working.pk})
@@ -131,7 +132,7 @@ class TestStationsListViews:
         request.headers = headers
 
         response = stations_blocked(request)
-        assert response.status_code == 201
+        assert response.status_code == status.HTTP_201_CREATED
         assert json.loads(response.content) == {
             'id': station_working.pk,
             'name': station_working.name
