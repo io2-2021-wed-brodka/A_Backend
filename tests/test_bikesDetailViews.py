@@ -1,5 +1,6 @@
 import pytest
 from django.contrib.auth.models import User
+from rest_framework import status
 from rest_framework.test import APIRequestFactory
 from rest_framework.utils import json
 
@@ -39,10 +40,10 @@ class TestBikesDetailViews:
 
     @pytest.fixture
     def bike(self, user, station):
-        return Bike.objects.create(station = station, bike_state = BikeState.Working)
+        return Bike.objects.create(station = station, bike_state = BikeState.Blocked)
 
     @pytest.fixture
-    def bike2(self, user, station):
+    def bike_not_blocked(self, user, station):
         return Bike.objects.create(station = station, bike_state = BikeState.Working)
 
     @pytest.fixture
@@ -54,45 +55,32 @@ class TestBikesDetailViews:
         request.headers = {'Authorization': f'Bearer {user.user.username}'}
 
         response = bikes_detail(request, bike.pk)
-        assert response.status_code == 401
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
     def test_delete_bikes_detail_tech_status(self, factory, bike, tech):
         request = factory.delete(f'/api/bikes/{bike.pk}')
         request.headers = {'Authorization': f'Bearer {tech.user.username}'}
 
         response = bikes_detail(request, bike.pk)
-        assert response.status_code == 401
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
     def test_delete_bikes_detail_admin_status(self, factory, bike, admin):
         request = factory.delete(f'/api/bikes/{bike.pk}')
         request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = bikes_detail(request, bike.pk)
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_delete_bikes_detail_admin_bad_request(self, factory, admin):
         request = factory.delete(f'/api/bikes/{420}')
         request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = bikes_detail(request, 420)
-        assert response.status_code == 404
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    def test_delete_bikes_detail_admin_response(self, factory, bike2, admin):
-        request = factory.delete(f'/api/bikes/{bike2.pk}')
+    def test_delete_bikes_detail_admin_not_blocked(self, factory, bike_not_blocked, admin):
+        request = factory.delete(f'/api/bikes/{bike_not_blocked.pk}')
         request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
-        bike_id = bike2.pk
-        station_id = bike2.station.id
-        station_name = bike2.station.name
-
-        response = bikes_detail(request, bike2.pk)
-
-        assert json.loads(response.content) == {
-            'id': bike_id,
-            'station': {
-                'id': station_id,
-                'name': station_name
-            },
-            'bike_state': BikeState.Working,
-            'user': None
-        }
+        response = bikes_detail(request, bike_not_blocked.pk)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
