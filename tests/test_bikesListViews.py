@@ -70,9 +70,11 @@ class TestBikesListViews:
                 'id': bike.pk,
                 'station': {
                     'id': station.pk,
-                    'name': 'Test station'
+                    'name': 'Test station',
+                    'status': station.state.label,
+                    'activeBikesCount': Bike.objects.filter(station__pk = station.pk, bike_state = BikeState.Working).count()
                 },
-                'bike_state': BikeState.Working,
+                'status': BikeState.Working.label,
                 'user': None
             }
         ]
@@ -118,10 +120,14 @@ class TestBikesListViews:
         data = json.loads(response.content)
 
         assert isinstance(data['id'], int) \
-               and data['station'] == {"id": station.pk, "name": station.name} \
-               and data['bike_state'] == BikeState.Working \
+               and data['station'] == {
+                   "id": station.pk,
+                   "name": station.name,
+                   'status': station.state.label,
+                   'activeBikesCount': Bike.objects.filter(station__pk = station.pk, bike_state = BikeState.Working).count()} \
+               and data['status'] == BikeState.Working.label \
                and data['user'] is None \
-               and set(data.keys()) == {'id', 'station', 'bike_state', 'user'}
+               and set(data.keys()) == {'id', 'station', 'status', 'user'}
 
     def test_post_bikes_list_bad_request_status(self, factory, admin):
         body = json.dumps({'id': 2137})

@@ -80,7 +80,9 @@ class TestStationsListViews:
         assert json.loads(response.content) == [
             {
                 'id': station_blocked.pk,
-                'name': station_blocked.name
+                'name': station_blocked.name,
+                'status': station_blocked.state.label,
+                'activeBikesCount': Bike.objects.filter(station__pk = station_blocked.pk, bike_state = BikeState.Working).count()
             }
         ]
 
@@ -134,5 +136,7 @@ class TestStationsListViews:
         response = stations_blocked(request)
         assert json.loads(response.content) == {
             'id': station_working.pk,
-            'name': station_working.name
+            'name': station_working.name,
+            'status': BikeState.Blocked.label,
+            'activeBikesCount': Bike.objects.filter(station__pk = station_working.pk, bike_state = BikeState.Working).count()
         }

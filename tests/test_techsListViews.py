@@ -1,5 +1,6 @@
 import pytest
 from django.contrib.auth.models import User
+from rest_framework import status
 from rest_framework.test import APIRequestFactory
 from rest_framework.utils import json
 
@@ -40,7 +41,7 @@ class TestBikesListViews:
         request.headers = {'Authorization': f'Bearer {user.user.username}'}
 
         response = techs_list(request)
-        assert response.status_code == 401
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_get_techs_list_tech_status(self, factory, tech):
         request = factory.get('/api/techs')
@@ -48,7 +49,7 @@ class TestBikesListViews:
 
         response = techs_list(request)
 
-        assert response.status_code == 401
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_get_techs_list_admin_status(self, factory, admin):
         request = factory.get('/api/techs')
@@ -56,7 +57,7 @@ class TestBikesListViews:
 
         response = techs_list(request)
 
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
     def test_get_techs_list_admin_body(self, factory, user, tech, admin):
         request = factory.get('api/bikes')
@@ -80,7 +81,7 @@ class TestBikesListViews:
 
         response = techs_list(request)
 
-        assert response.status_code == 401
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_post_techs_list_tech_status(self, factory, tech):
         body = json.dumps({'name': 'NowyMariusz', 'password': '123456'})
@@ -91,7 +92,7 @@ class TestBikesListViews:
 
         response = techs_list(request)
 
-        assert response.status_code == 401
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_post_techs_list_admin_status(self, factory, admin):
         body = json.dumps({'name': 'NowyMariusz', 'password': '123456'})
@@ -102,7 +103,7 @@ class TestBikesListViews:
 
         response = techs_list(request)
 
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
     def test_post_tech_list_admin_response(self, factory, admin):
         body = json.dumps({'name': 'NowyMariusz', 'password': '123456'})
@@ -126,10 +127,10 @@ class TestBikesListViews:
         request.headers = headers
 
         response = techs_list(request)
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
         response = techs_list(request)
-        assert response.status_code == 409
+        assert response.status_code == status.HTTP_409_CONFLICT
 
     def test_post_tech_list_bad_request_status(self, factory, admin):
         body = json.dumps({'namee': 'NowyMariusz', 'password': '123456'})
@@ -139,7 +140,7 @@ class TestBikesListViews:
         request.headers = headers
 
         response = techs_list(request)
-        assert response.status_code == 400
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_post_tech_list_bad_request2_status(self, factory, admin):
         body = json.dumps({'name': 'NowyMariusz'})
@@ -149,7 +150,7 @@ class TestBikesListViews:
         request.headers = headers
 
         response = techs_list(request)
-        assert response.status_code == 400
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_post_tech_list_bad_request3_status(self, factory, admin):
         body = json.dumps({'password': '421412'})
@@ -159,4 +160,4 @@ class TestBikesListViews:
         request.headers = headers
 
         response = techs_list(request)
-        assert response.status_code == 400
+        assert response.status_code == status.HTTP_400_BAD_REQUEST

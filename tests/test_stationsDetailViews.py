@@ -1,5 +1,6 @@
 import pytest
 from django.contrib.auth.models import User
+from rest_framework import status
 from rest_framework.test import APIRequestFactory
 from rest_framework.utils import json
 
@@ -58,7 +59,7 @@ class TestStationsDetailViews:
         request.headers = {'Authorization': f'Bearer {user.user.username}'}
 
         response = stations_detail(request, station.pk)
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
     def test_get_stations_detail_tech_status(self, factory, station, tech):
         request = factory.get(f'/api/stations/{station.pk}')
@@ -66,7 +67,7 @@ class TestStationsDetailViews:
 
         response = stations_detail(request, station.pk)
 
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
     def test_get_stations_detail_admin_status(self, factory, station, admin):
         request = factory.get(f'/api/stations/{station.pk}')
@@ -74,7 +75,7 @@ class TestStationsDetailViews:
 
         response = stations_detail(request, station.pk)
 
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
     def test_get_stations_detail_response(self, factory, station, user):
         request = factory.get(f'/api/stations/{station.pk}')
@@ -84,7 +85,9 @@ class TestStationsDetailViews:
 
         assert json.loads(response.content) == {
             'id': station.pk,
-            'name': station.name
+            'name': station.name,
+            'status': station.state.label,
+            'activeBikesCount': Bike.objects.filter(station__pk = station.pk, bike_state = BikeState.Working).count()
         }
 
     def test_delete_stations_detail_user_status(self, factory, station, user):
@@ -93,7 +96,7 @@ class TestStationsDetailViews:
 
         response = stations_detail(request, station.pk)
 
-        assert response.status_code == 401
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_delete_stations_detail_tech_status(self, factory, station, tech):
         request = factory.delete(f'/api/stations/{station.pk}')
@@ -101,7 +104,7 @@ class TestStationsDetailViews:
 
         response = stations_detail(request, station.pk)
 
-        assert response.status_code == 401
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_delete_stations_detail_admin_status(self, factory, station, admin):
         request = factory.delete(f'/api/stations/{station.pk}')
@@ -109,7 +112,7 @@ class TestStationsDetailViews:
 
         response = stations_detail(request, station.pk)
 
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_delete_stations_detail_admin_bad_request(self, factory, admin):
         request = factory.delete(f'/api/bikes/{420}')
@@ -117,7 +120,7 @@ class TestStationsDetailViews:
 
         response = stations_detail(request, 420)
 
-        assert response.status_code == 404
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_delete_stations_detail_admin_working_station(self, factory, admin, working_station):
         request = factory.delete(f'/api/stations/{working_station.pk}')
@@ -125,7 +128,7 @@ class TestStationsDetailViews:
 
         response = stations_detail(request, working_station.pk)
 
-        assert response.status_code == 422
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     def test_delete_stations_detail_admin_not_empty(self, factory, station, bike, admin):
         request = factory.delete(f'/api/stations/{station.pk}')
@@ -133,15 +136,4 @@ class TestStationsDetailViews:
 
         response = stations_detail(request, station.pk)
 
-        assert response.status_code == 422
-
-    def test_delete_stations_detail_admin_response(self, factory, empty_station, admin):
-        request = factory.delete(f'/api/stations/{empty_station.pk}')
-        request.headers = {'Authorization': f'Bearer {admin.user.username}'}
-
-        response = stations_detail(request, empty_station.pk)
-
-        assert json.loads(response.content) == {
-            'id': empty_station.id,
-            'name': empty_station.name
-        }
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY

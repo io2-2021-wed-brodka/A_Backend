@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 
@@ -16,7 +16,7 @@ def get(pk):
 
 def delete(user, pk):
     if user.role != Role.Admin:
-        return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_401_UNAUTHORIZED)
+        return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_403_FORBIDDEN)
 
     station = BikeStation.objects.filter(pk = pk).first()
 
@@ -29,7 +29,6 @@ def delete(user, pk):
     if Bike.objects.filter(station_id__exact = station.pk).count() > 0:
         return JsonResponse({'message': 'Station is not empty'}, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-    data = StationSerializer(station).data
     station.delete()
 
-    return JsonResponse(data, safe = False, status = status.HTTP_200_OK)
+    return HttpResponse(status = status.HTTP_204_NO_CONTENT)

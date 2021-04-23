@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import re_path
 
 from BikeRentalApi import auth_views
 from .views import bikes_list, bikes_detail, bikes_rented, stations_list, stations_detail, stations_detail_bikes, \
@@ -6,19 +6,20 @@ from .views import bikes_list, bikes_detail, bikes_rented, stations_list, statio
 
 
 urlpatterns = [
-    path('bikes/', bikes_list, name = 'bikes_list'),
-    path('bikes/<int:pk>/', bikes_detail, name = 'bikes_detail'),
-    path('bikes/rented', bikes_rented, name = 'bikes_rented'),
-    path('bikes/blocked', bikes_blocked, name = 'bikes_blocked'),
-    path('bikes/blocked/<int:pk>', bikes_unblocked, name = 'bikes_unblocked'),
-    path('stations/', stations_list, name = 'station_list'),
-    path('stations/<int:pk>/', stations_detail, name = 'station_detail'),
-    path('stations/<int:pk>/bikes/', stations_detail_bikes, name = 'station_detail_bikes'),
-    path('stations/blocked', stations_blocked, name = 'bikes_blocked'),
-    path('stations/blocked/<int:pk>', stations_blocked_detail, name = 'bikes_blocked_detail'),
-    path('register/', auth_views.register, name = 'register'),
-    path('login/', auth_views.login, name = 'login'),
-    path('logout/', auth_views.logout, name = 'logout'),
-    path('techs/', techs_list, name = 'techs_list'),
-    path('techs/<int:pk>', techs_detail, name = 'techs_detail'),
+    re_path(r'bikes/?$', bikes_list, name = 'bikes_list'),
+    re_path(r'bikes/(?P<pk>[0-9]+)/?$', bikes_detail, name = 'bikes_detail'),
+    re_path(r'bikes/rented/?$', bikes_rented, name = 'bikes_rented'),
+    re_path(r'bikes/blocked/?$', bikes_blocked, name = 'bikes_blocked'),
+    re_path(r'bikes/blocked/(?P<pk>[0-9]+)/?$', bikes_unblocked, name = 'bikes_unblocked'),
+    re_path(r'stations/?$', stations_list, name = 'station_list'),
+    re_path(r'stations/(?P<pk>[0-9]+)/?$', stations_detail, name = 'station_detail'),
+    re_path(r'stations/(?P<pk>[0-9]+)/bikes/?$', stations_detail_bikes, name = 'station_detail_bikes'),
+    re_path(r'stations/blocked/?$', stations_blocked, name = 'bikes_blocked'),
+    re_path(r'stations/active/?$', stations_blocked, name = 'bikes_blocked'),
+    re_path(r'stations/blocked/(?P<pk>[0-9]+)/?$', stations_blocked_detail, name = 'bikes_blocked_detail'),
+    re_path(r'register/?$', auth_views.register, name = 'register'),
+    re_path(r'login/?$', auth_views.login, name = 'login'),
+    re_path(r'logout/?$', auth_views.logout, name = 'logout'),
+    re_path(r'techs/?$', techs_list, name = 'techs_list'),
+    re_path(r'techs/(?P<pk>[0-9]+)/?$', techs_detail, name = 'techs_detail'),
 ]
