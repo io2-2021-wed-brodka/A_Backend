@@ -5,14 +5,14 @@ from BikeRentalApi.models import BikeStation
 
 
 class AddBikeStationSerializer(serializers.ModelSerializer):
-    id = IntegerField()
+    stationId = IntegerField()
 
     class Meta:
         model = BikeStation
-        fields = ['id']
+        fields = ['stationId']
 
     def create(self, validated_data):
         try:
-            return BikeStation.objects.get(id = validated_data['id'])
+            return BikeStation.objects.get(id = validated_data['stationId'])
         except BikeStation.DoesNotExist:
             return None

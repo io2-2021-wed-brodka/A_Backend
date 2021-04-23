@@ -38,11 +38,7 @@ def post(request, user):
     bike.station = None
     bike.save()
 
-    rental = Rental()
-    rental.bike = bike
-    rental.user = user
-    rental.start_date = timezone.now()
-    rental.end_date = rental.start_date + timezone.timedelta(minutes = 30)
+    rental = Rental.objects.create(bike = bike, user = user, start_date = timezone.now())
     rental.save()
 
     serializer = BikeSerializer(bike)
