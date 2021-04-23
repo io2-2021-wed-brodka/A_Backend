@@ -25,6 +25,7 @@ def bikes_detail(request, pk):
     raise NotFound()
 
 
+@csrf_exempt
 def bikes_blocked(request):
     user = authenticate_bikes_user(request)
 
@@ -36,6 +37,7 @@ def bikes_blocked(request):
     raise NotFound()
 
 
+@csrf_exempt
 def bikes_unblocked(request, pk):
     user = authenticate_bikes_user(request)
     if request.method == 'DELETE':
