@@ -3,7 +3,7 @@ from rest_framework.exceptions import NotFound
 
 from .authentication import authenticate_bikes_user
 from .endpoints import bikesList, bikesDetail, stationsList, stationsDetail, bikesRented, stationsDetailBikes, \
-    techsList, techsDetail
+    techsList, techsDetail, stationsBlocked, stationsDetailsBlocked
 
 
 def bikes_list(request):
@@ -48,6 +48,7 @@ def stations_list(request):
     raise NotFound()
 
 
+@csrf_exempt
 def stations_detail(request, pk):
     user = authenticate_bikes_user(request)
 
@@ -67,6 +68,28 @@ def stations_detail_bikes(request, pk):
         return stationsDetailBikes.get(pk)
     elif request.method == 'POST':
         return stationsDetailBikes.post(request, user, pk)
+
+    raise NotFound()
+
+
+@csrf_exempt
+def stations_blocked(request):
+    user = authenticate_bikes_user(request)
+
+    if request.method == 'GET':
+        return stationsBlocked.get(user)
+    elif request.method == 'POST':
+        return stationsBlocked.post(request, user)
+
+    raise NotFound()
+
+
+@csrf_exempt
+def stations_blocked_detail(request, pk):
+    user = authenticate_bikes_user(request)
+
+    if request.method == 'DELETE':
+        return stationsDetailsBlocked.delete(user, pk)
 
     raise NotFound()
 
