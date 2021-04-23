@@ -1,8 +1,8 @@
+from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 
 from BikeRentalApi.enums import BikeState
-from BikeRentalApi.models import BikeStation, Bike
-from rest_framework import serializers
+from BikeRentalApi.models import BikeStation
 
 
 class StationSerializer(serializers.ModelSerializer):
@@ -17,4 +17,4 @@ class StationSerializer(serializers.ModelSerializer):
         return obj.state.label
 
     def get_activeBikesCount(self, obj: BikeStation):
-        return Bike.objects.filter(station__pk__exact = obj.pk, bike_state = BikeState.Working).count()
+        return obj.bike_set.filter(bike_state = BikeState.Working).count()
