@@ -132,7 +132,6 @@ class TestStationsListViews:
         request.headers = headers
 
         response = stations_blocked(request)
-        assert response.status_code == status.HTTP_201_CREATED
         assert json.loads(response.content) == {
             'id': station_working.pk,
             'name': station_working.name
