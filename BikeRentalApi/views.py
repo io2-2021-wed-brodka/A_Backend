@@ -42,6 +42,7 @@ def bikes_blocked(request):
 @csrf_exempt
 def bikes_unblocked(request, pk):
     user = authenticate_bikes_user(request)
+    print(pk)
     if request.method == 'DELETE':
         return bikesUnblocked.delete(user, pk)
 
@@ -60,6 +61,7 @@ def bikes_rented(request):
     raise NotFound()
 
 
+@csrf_exempt
 def stations_list(request):
     user = authenticate_bikes_user(request)
 
