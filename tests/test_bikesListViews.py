@@ -105,7 +105,7 @@ class TestBikesListViews:
         request.headers = headers
 
         response = bikes_list(request)
-        assert response.status_code == 201
+        assert response.status_code == status.HTTP_201_CREATED
 
     def test_post_bikes_list_admin_response(self, factory, station, admin):
         body = json.dumps({'stationId': station.pk})
@@ -131,4 +131,4 @@ class TestBikesListViews:
         request.headers = headers
 
         response = bikes_list(request)
-        assert response.status_code == 400
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
