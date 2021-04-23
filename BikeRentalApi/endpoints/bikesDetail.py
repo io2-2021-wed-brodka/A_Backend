@@ -8,7 +8,7 @@ from BikeRentalApi.enums import Role, BikeState
 
 def delete(user, pk):
     if user.role != Role.Admin:
-        return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_401_UNAUTHORIZED)
+        return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_403_FORBIDDEN)
 
     bike = Bike.objects.filter(pk = pk).first()
 

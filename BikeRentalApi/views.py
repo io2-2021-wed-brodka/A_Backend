@@ -6,6 +6,7 @@ from .endpoints import bikesList, bikesDetail, stationsList, stationsDetail, bik
     techsList, techsDetail, bikesBlocked, bikesUnblocked
 
 
+@csrf_exempt
 def bikes_list(request):
     user = authenticate_bikes_user(request)
 
@@ -17,6 +18,7 @@ def bikes_list(request):
     raise NotFound()
 
 
+@csrf_exempt
 def bikes_detail(request, pk):
     user = authenticate_bikes_user(request)
     if request.method == 'DELETE':
