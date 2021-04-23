@@ -14,7 +14,7 @@ def delete(user, pk):
 
     if bike is None:
         return JsonResponse({"message": "Bike not found"}, status = status.HTTP_404_NOT_FOUND)
-    if bike.bike_state!=BikeState.Blocked:
+    if bike.bike_state != BikeState.Blocked:
         return JsonResponse({"message": "Bike is not blocked"}, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
     data = BikeSerializer(bike).data
     bike.delete()

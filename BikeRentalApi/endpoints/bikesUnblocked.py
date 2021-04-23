@@ -6,7 +6,7 @@ from BikeRentalApi.enums import Role, BikeState
 
 
 def delete(user, pk):
-    if user.role <= Role.Tech:
+    if user.role < Role.Tech:
         return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_403_FORBIDDEN)
 
     bike = Bike.objects.filter(id = pk).first()
@@ -19,4 +19,4 @@ def delete(user, pk):
     bike.bike_state = BikeState.Working
     bike.save()
 
-    return HttpResponse(status.HTTP_204_NO_CONTENT)
+    return HttpResponse(status = status.HTTP_204_NO_CONTENT)
