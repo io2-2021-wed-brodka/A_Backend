@@ -54,14 +54,14 @@ class TestBikesDetailViews:
         request.headers = {'Authorization': f'Bearer {user.user.username}'}
 
         response = bikes_detail(request, bike.pk)
-        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_delete_bikes_detail_tech_status(self, factory, bike, tech):
         request = factory.delete(f'/api/bikes/{bike.pk}')
         request.headers = {'Authorization': f'Bearer {tech.user.username}'}
 
         response = bikes_detail(request, bike.pk)
-        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_delete_bikes_detail_admin_status(self, factory, bike, admin):
         request = factory.delete(f'/api/bikes/{bike.pk}')
