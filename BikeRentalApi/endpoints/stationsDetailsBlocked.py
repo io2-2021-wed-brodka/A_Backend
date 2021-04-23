@@ -8,7 +8,11 @@ from BikeRentalApi.models import BikeStation
 def delete(user, pk):
     if user.role != Role.Admin:
         return JsonResponse({"message": "Forbidden"}, status = status.HTTP_403_FORBIDDEN)
-    station = BikeStation.objects.filter(pk = pk).first()
+
+    try:
+        station = BikeStation.objects.get(id = pk)
+    except BikeStation.DoesNotExist:
+        return JsonResponse({"message": "Station not found"}, status = status.HTTP_404_NOT_FOUND)
 
     if station is None:
         return JsonResponse({"message": "Station not found"}, status = status.HTTP_404_NOT_FOUND)
