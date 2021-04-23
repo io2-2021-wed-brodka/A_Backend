@@ -2,12 +2,13 @@ from django.urls import path
 
 from BikeRentalApi import auth_views
 from .views import bikes_list, bikes_detail, bikes_rented, stations_list, stations_detail, stations_detail_bikes, \
-    techs_list, techs_detail
+    techs_list, techs_detail, bikes_blocked
 
 urlpatterns = [
     path('bikes/', bikes_list, name = 'bikes_list'),
     path('bikes/<int:pk>/', bikes_detail, name = 'bikes_detail'),
     path('bikes/rented', bikes_rented, name = 'bikes_rented'),
+    path('bikes/blocked', bikes_blocked, name = 'bikes_blocked'),
     path('stations/', stations_list, name = 'station_list'),
     path('stations/<int:pk>/', stations_detail, name = 'station_detail'),
     path('stations/<int:pk>/bikes/', stations_detail_bikes, name = 'station_detail_bikes'),

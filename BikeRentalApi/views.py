@@ -3,7 +3,7 @@ from rest_framework.exceptions import NotFound
 
 from .authentication import authenticate_bikes_user
 from .endpoints import bikesList, bikesDetail, stationsList, stationsDetail, bikesRented, stationsDetailBikes, \
-    techsList, techsDetail
+    techsList, techsDetail, bikesBlocked
 
 
 def bikes_list(request):
@@ -21,6 +21,17 @@ def bikes_detail(request, pk):
     user = authenticate_bikes_user(request)
     if request.method == 'DELETE':
         return bikesDetail.delete(user, pk)
+
+    raise NotFound()
+
+
+def bikes_blocked(request):
+    user = authenticate_bikes_user(request)
+
+    if request.method == 'GET':
+        return bikesBlocked.get(user)
+    elif request.method == 'POST':
+        return bikesBlocked.post(request, user)
 
     raise NotFound()
 
