@@ -59,11 +59,8 @@ class TestStationsDetailViews:
         bike = Bike.objects.create(station = None, bike_state = BikeState.InService)
         rental_date = date(2005, 7, 14)
         rental_start_time = time(12, 30)
-        rental_end_time = time(12, 55)
         rental_start_datetime = datetime.combine(rental_date, rental_start_time, tzinfo = timezone.utc)
-        rental_end_datetime = datetime.combine(rental_date, rental_end_time, tzinfo = timezone.utc)
-        Rental.objects.create(user = user, bike = bike, start_date = rental_start_datetime,
-                              end_date = rental_end_datetime)
+        Rental.objects.create(user = user, bike = bike, start_date = rental_start_datetime)
         return bike
 
     @pytest.fixture

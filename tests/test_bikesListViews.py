@@ -1,5 +1,6 @@
 import pytest
 from django.contrib.auth.models import User
+from rest_framework import status
 from rest_framework.test import APIRequestFactory
 from rest_framework.utils import json
 
@@ -50,22 +51,20 @@ class TestBikesListViews:
         request.headers = {'Authorization': f'Bearer {user.user.username}'}
 
         response = bikes_list(request)
-        assert response.status_code == 401
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_get_bikes_list_tech_status(self, factory, tech):
         request = factory.get('/api/bikes')
         request.headers = {'Authorization': f'Bearer {tech.user.username}'}
 
         response = bikes_list(request)
-
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
     def test_get_bikes_list_tech_body(self, factory, user, station, bike, tech):
         request = factory.get('api/bikes')
         request.headers = {'Authorization': f'Bearer {tech.user.username}'}
 
         response = bikes_list(request)
-
         assert json.loads(response.content) == [
             {
                 'id': bike.pk,
@@ -86,8 +85,7 @@ class TestBikesListViews:
         request.headers = headers
 
         response = bikes_list(request)
-
-        assert response.status_code == 401
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_post_bikes_list_tech_status(self, factory, station, tech):
         body = json.dumps({'id': station.id})
@@ -97,22 +95,20 @@ class TestBikesListViews:
         request.headers = headers
 
         response = bikes_list(request)
-
-        assert response.status_code == 401
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_post_bikes_list_admin_status(self, factory, station, admin):
-        body = json.dumps({'id': station.id})
+        body = json.dumps({'stationId': station.id})
         request = factory.post('/api/bikes', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {admin.user.username}'}
         headers.update(request.headers)
         request.headers = headers
 
         response = bikes_list(request)
-
-        assert response.status_code == 201
+        assert response.status_code == status.HTTP_201_CREATED
 
     def test_post_bikes_list_admin_response(self, factory, station, admin):
-        body = json.dumps({'id': station.pk})
+        body = json.dumps({'stationId': station.pk})
         request = factory.post('/api/bikes', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {admin.user.username}'}
         headers.update(request.headers)
@@ -135,5 +131,4 @@ class TestBikesListViews:
         request.headers = headers
 
         response = bikes_list(request)
-
-        assert response.status_code == 404
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
