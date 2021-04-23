@@ -101,7 +101,10 @@ class TestStationsDetailViews:
                 'status': BikeState.Working.label,
                 'station': {
                     'id': station.pk,
-                    'name': station.name
+                    'name': station.name,
+                    'status': station.state.label,
+                    'activeBikesCount': Bike.objects.filter(station__pk = station.pk,
+                                                            bike_state = BikeState.Working).count()
                 }
             }
         ]
@@ -130,7 +133,10 @@ class TestStationsDetailViews:
             'user': None,
             'station': {
                 'id': station.pk,
-                'name': station.name
+                'name': station.name,
+                'status': station.state.label,
+                'activeBikesCount': Bike.objects.filter(station__pk = station.pk,
+                                                        bike_state = BikeState.Working).count()
             }
         }
 

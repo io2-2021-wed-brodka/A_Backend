@@ -74,7 +74,10 @@ class TestBikesBlockedViews:
                 'id': bike_blocked.pk,
                 'station': {
                     'id': station.pk,
-                    'name': 'Test station'
+                    'name': 'Test station',
+                    'status': station.state.label,
+                    'activeBikesCount': Bike.objects.filter(station__pk = station.pk,
+                                                            bike_state = BikeState.Working).count()
                 },
                 'status': BikeState.Blocked.label,
                 'user': None
@@ -112,10 +115,15 @@ class TestBikesBlockedViews:
         data = json.loads(response.content)
 
         assert data['id'] == bike_working.id \
-               and data['station'] == {"id": station.pk, "name": station.name} \
-               and data['status'] == BikeState.Blocked.label \
-               and data['user'] is None \
-               and set(data.keys()) == {'id', 'station', 'status', 'user'}
+            and data['station'] == {
+               "id": station.pk,
+               "name": station.name,
+               'status': station.state.label,
+               'activeBikesCount': Bike.objects.filter(station__pk = station.pk,
+                                                       bike_state = BikeState.Working).count()} \
+            and data['status'] == BikeState.Blocked.label \
+            and data['user'] is None \
+            and set(data.keys()) == {'id', 'station', 'status', 'user'}
 
     def test_post_bikes_tech_blocked_bad_request_status(self, factory, tech):
         body = json.dumps({'id': 2137})
@@ -158,10 +166,15 @@ class TestBikesBlockedViews:
         data = json.loads(response.content)
 
         assert data['id'] == bike_working.id \
-               and data['station'] == {"id": station.pk, "name": station.name} \
-               and data['status'] == BikeState.Blocked.label \
-               and data['user'] is None \
-               and set(data.keys()) == {'id', 'station', 'status', 'user'}
+            and data['station'] == {
+               "id": station.pk,
+               "name": station.name,
+               'status': station.state.label,
+               'activeBikesCount': Bike.objects.filter(station__pk = station.pk,
+                                                       bike_state = BikeState.Working).count()} \
+            and data['status'] == BikeState.Blocked.label \
+            and data['user'] is None \
+            and set(data.keys()) == {'id', 'station', 'status', 'user'}
 
     def test_post_bikes_admin_blocked_bad_request_status(self, factory, admin):
         body = json.dumps({'id': 2137})

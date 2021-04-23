@@ -70,7 +70,9 @@ class TestBikesListViews:
                 'id': bike.pk,
                 'station': {
                     'id': station.pk,
-                    'name': 'Test station'
+                    'name': 'Test station',
+                    'status': station.state.label,
+                    'activeBikesCount': Bike.objects.filter(station__pk = station.pk, bike_state = BikeState.Working).count()
                 },
                 'status': BikeState.Working.label,
                 'user': None
@@ -118,7 +120,11 @@ class TestBikesListViews:
         data = json.loads(response.content)
 
         assert isinstance(data['id'], int) \
-               and data['station'] == {"id": station.pk, "name": station.name} \
+               and data['station'] == {
+                   "id": station.pk,
+                   "name": station.name,
+                   'status': station.state.label,
+                   'activeBikesCount': Bike.objects.filter(station__pk = station.pk, bike_state = BikeState.Working).count()} \
                and data['status'] == BikeState.Working.label \
                and data['user'] is None \
                and set(data.keys()) == {'id', 'station', 'status', 'user'}

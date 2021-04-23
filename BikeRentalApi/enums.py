@@ -20,6 +20,11 @@ class StationState(enum.Enum):
     Working = 0
     Blocked = 1
 
+    __labels__ = {
+        Working: gettext_lazy("active"),
+        Blocked: gettext_lazy("blocked"),
+    }
+
 
 class UserState(enum.Enum):
     Active = 0

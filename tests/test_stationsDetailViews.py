@@ -85,7 +85,9 @@ class TestStationsDetailViews:
 
         assert json.loads(response.content) == {
             'id': station.pk,
-            'name': station.name
+            'name': station.name,
+            'status': station.state.label,
+            'activeBikesCount': Bike.objects.filter(station__pk = station.pk, bike_state = BikeState.Working).count()
         }
 
     def test_delete_stations_detail_user_status(self, factory, station, user):
@@ -144,5 +146,7 @@ class TestStationsDetailViews:
 
         assert json.loads(response.content) == {
             'id': empty_station.id,
-            'name': empty_station.name
+            'name': empty_station.name,
+            'status': empty_station.state.label,
+            'activeBikesCount': Bike.objects.filter(station__pk = empty_station.pk, bike_state = BikeState.Working).count()
         }

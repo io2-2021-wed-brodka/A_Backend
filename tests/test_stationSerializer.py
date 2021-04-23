@@ -16,7 +16,7 @@ class TestStationSerializer:
         return StationSerializer(station).data
 
     def test_contains_expected_fields(self, serialized_station):
-        assert set(serialized_station.keys()) == {'id', 'name'}
+        assert set(serialized_station.keys()) == {'id', 'name', 'status', 'activeBikesCount'}
 
     def test_bike_state_field_content(self, serialized_station, station):
         assert serialized_station['name'] == station.name
