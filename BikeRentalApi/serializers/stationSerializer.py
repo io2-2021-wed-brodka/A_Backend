@@ -17,4 +17,4 @@ class StationSerializer(serializers.ModelSerializer):
         return obj.state.label
 
     def get_activeBikesCount(self, obj: BikeStation):
-        return Bike.objects.filter(station__pk = obj.pk, bike_state = BikeState.Working).count()
+        return Bike.objects.filter(station__pk__exact = obj.pk, bike_state = BikeState.Working).count()
