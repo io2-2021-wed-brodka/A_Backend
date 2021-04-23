@@ -1,9 +1,8 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from rest_framework import status
 
-from BikeRentalApi.models import Bike
-from BikeRentalApi.serializers.bikeSerializer import BikeSerializer
 from BikeRentalApi.enums import Role, BikeState
+from BikeRentalApi.models import Bike
 
 
 def delete(user, pk):
@@ -16,7 +15,7 @@ def delete(user, pk):
         return JsonResponse({"message": "Bike not found"}, status = status.HTTP_404_NOT_FOUND)
     if bike.bike_state != BikeState.Blocked:
         return JsonResponse({"message": "Bike is not blocked"}, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
-    data = BikeSerializer(bike).data
+
     bike.delete()
 
-    return JsonResponse(data, safe = False, status = status.HTTP_204_NO_CONTENT)
+    return HttpResponse(status = status.HTTP_204_NO_CONTENT)

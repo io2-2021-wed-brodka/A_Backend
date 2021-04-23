@@ -62,7 +62,7 @@ class TestBikesDetailViews:
         request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = techs_detail(request, tech2.pk)
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_delete_techs_detail_admin_bad_request(self, factory, admin):
         request = factory.delete(f'/api/bikes/{420}')
@@ -77,25 +77,11 @@ class TestBikesDetailViews:
         request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = techs_detail(request, tech2.pk)
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
         response = techs_detail(request, tech2.pk)
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert 'message' in json.loads(response.content).keys()
-
-    def test_delete_bikes_detail_admin_response(self, factory, tech2, admin):
-        request = factory.delete(f'/api/bikes/{tech2.pk}')
-        request.headers = {'Authorization': f'Bearer {admin.user.username}'}
-
-        tech_id = tech2.pk
-        tech_name = tech2.user.username
-
-        response = techs_detail(request, tech2.pk)
-
-        assert json.loads(response.content) == {
-            'id': tech_id,
-            'name': tech_name
-        }
 
     def test_get_techs_detail_user_status(self, factory, tech2, user):
         request = factory.get(f'/api/tech/{tech2.pk}')

@@ -112,7 +112,7 @@ class TestStationsDetailViews:
 
         response = stations_detail(request, station.pk)
 
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_delete_stations_detail_admin_bad_request(self, factory, admin):
         request = factory.delete(f'/api/bikes/{420}')
@@ -137,16 +137,3 @@ class TestStationsDetailViews:
         response = stations_detail(request, station.pk)
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-
-    def test_delete_stations_detail_admin_response(self, factory, empty_station, admin):
-        request = factory.delete(f'/api/stations/{empty_station.pk}')
-        request.headers = {'Authorization': f'Bearer {admin.user.username}'}
-
-        response = stations_detail(request, empty_station.pk)
-
-        assert json.loads(response.content) == {
-            'id': empty_station.id,
-            'name': empty_station.name,
-            'status': empty_station.state.label,
-            'activeBikesCount': Bike.objects.filter(station__pk = empty_station.pk, bike_state = BikeState.Working).count()
-        }
