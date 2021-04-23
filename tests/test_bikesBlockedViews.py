@@ -93,7 +93,7 @@ class TestBikesListViews:
 
     def test_post_bikes_list_tech_status(self, factory, bike_working, tech):
         body = json.dumps({'id': bike_working.id})
-        request = factory.post('/api/bikes', content_type = 'application/json', data = body)
+        request = factory.post('/api/bikes/blocked', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {tech.user.username}'}
         headers.update(request.headers)
         request.headers = headers
@@ -103,7 +103,7 @@ class TestBikesListViews:
 
     def test_post_bikes_list_tech_response(self, factory, bike_working, station, tech):
         body = json.dumps({'id': bike_working.pk})
-        request = factory.post('/api/bikes', content_type = 'application/json', data = body)
+        request = factory.post('/api/bikes/blocked', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {tech.user.username}'}
         headers.update(request.headers)
         request.headers = headers
@@ -119,7 +119,7 @@ class TestBikesListViews:
 
     def test_post_bikes_tech_list_bad_request_status(self, factory, tech):
         body = json.dumps({'id': 2137})
-        request = factory.post('/api/bikes', content_type = 'application/json', data = body)
+        request = factory.post('/api/bikes/blocked', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {tech.user.username}'}
         headers.update(request.headers)
         request.headers = headers
@@ -129,7 +129,7 @@ class TestBikesListViews:
 
     def test_post_bikes_list_tech_bad_bike(self, factory, bike_blocked, station, tech):
         body = json.dumps({'id': bike_blocked.pk})
-        request = factory.post('/api/bikes', content_type = 'application/json', data = body)
+        request = factory.post('/api/bikes/blocked', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {tech.user.username}'}
         headers.update(request.headers)
         request.headers = headers
@@ -141,7 +141,7 @@ class TestBikesListViews:
 
     def test_post_bikes_list_admin_status(self, factory, bike_working, admin):
         body = json.dumps({'id': bike_working.id})
-        request = factory.post('/api/bikes', content_type = 'application/json', data = body)
+        request = factory.post('/api/bikes/blocked', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {admin.user.username}'}
         headers.update(request.headers)
         request.headers = headers
@@ -151,7 +151,7 @@ class TestBikesListViews:
 
     def test_post_bikes_list_admin_response(self, factory, bike_working, station, admin):
         body = json.dumps({'id': bike_working.pk})
-        request = factory.post('/api/bikes', content_type = 'application/json', data = body)
+        request = factory.post('/api/bikes/blocked', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {admin.user.username}'}
         headers.update(request.headers)
         request.headers = headers
@@ -167,7 +167,7 @@ class TestBikesListViews:
 
     def test_post_bikes_admin_list_bad_request_status(self, factory, admin):
         body = json.dumps({'id': 2137})
-        request = factory.post('/api/bikes', content_type = 'application/json', data = body)
+        request = factory.post('/api/bikes/blocked', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {admin.user.username}'}
         headers.update(request.headers)
         request.headers = headers
@@ -177,7 +177,7 @@ class TestBikesListViews:
 
     def test_post_bikes_list_admin_bad_bike(self, factory, bike_blocked, station, admin):
         body = json.dumps({'id': bike_blocked.pk})
-        request = factory.post('/api/bikes', content_type = 'application/json', data = body)
+        request = factory.post('/api/bikes/blocked', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {admin.user.username}'}
         headers.update(request.headers)
         request.headers = headers
