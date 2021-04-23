@@ -76,7 +76,7 @@ class TestBikesBlockedViews:
                     'id': station.pk,
                     'name': 'Test station'
                 },
-                'bike_state': BikeState.Blocked,
+                'status': BikeState.Blocked.label,
                 'user': None
             }
         ]
@@ -113,9 +113,9 @@ class TestBikesBlockedViews:
 
         assert data['id'] == bike_working.id \
                and data['station'] == {"id": station.pk, "name": station.name} \
-               and data['bike_state'] == BikeState.Blocked \
+               and data['status'] == BikeState.Blocked.label \
                and data['user'] is None \
-               and set(data.keys()) == {'id', 'station', 'bike_state', 'user'}
+               and set(data.keys()) == {'id', 'station', 'status', 'user'}
 
     def test_post_bikes_tech_blocked_bad_request_status(self, factory, tech):
         body = json.dumps({'id': 2137})
@@ -159,9 +159,9 @@ class TestBikesBlockedViews:
 
         assert data['id'] == bike_working.id \
                and data['station'] == {"id": station.pk, "name": station.name} \
-               and data['bike_state'] == BikeState.Blocked \
+               and data['status'] == BikeState.Blocked.label \
                and data['user'] is None \
-               and set(data.keys()) == {'id', 'station', 'bike_state', 'user'}
+               and set(data.keys()) == {'id', 'station', 'status', 'user'}
 
     def test_post_bikes_admin_blocked_bad_request_status(self, factory, admin):
         body = json.dumps({'id': 2137})

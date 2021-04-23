@@ -41,10 +41,10 @@ class TestBikeSerializer:
         return bike_serializer.data
 
     def test_contains_expected_fields(self, serialized_bike):
-        assert set(serialized_bike.keys()) == {'id', 'bike_state', 'station', 'user'}
+        assert set(serialized_bike.keys()) == {'id', 'status', 'station', 'user'}
 
     def test_bike_state_field_content(self, serialized_bike, bike):
-        assert serialized_bike['bike_state'] == bike.bike_state
+        assert serialized_bike['status'] == bike.bike_state.label
 
     def test_station_field_content(self, serialized_bike, bike):
         assert serialized_bike['station'] == StationSerializer(bike.station).data

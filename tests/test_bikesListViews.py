@@ -72,7 +72,7 @@ class TestBikesListViews:
                     'id': station.pk,
                     'name': 'Test station'
                 },
-                'bike_state': BikeState.Working,
+                'status': BikeState.Working.label,
                 'user': None
             }
         ]
@@ -119,9 +119,9 @@ class TestBikesListViews:
 
         assert isinstance(data['id'], int) \
                and data['station'] == {"id": station.pk, "name": station.name} \
-               and data['bike_state'] == BikeState.Working \
+               and data['status'] == BikeState.Working.label \
                and data['user'] is None \
-               and set(data.keys()) == {'id', 'station', 'bike_state', 'user'}
+               and set(data.keys()) == {'id', 'station', 'status', 'user'}
 
     def test_post_bikes_list_bad_request_status(self, factory, admin):
         body = json.dumps({'id': 2137})

@@ -1,8 +1,5 @@
-import io
-
 from django.http import JsonResponse
 from rest_framework import status
-from rest_framework.parsers import JSONParser
 
 from BikeRentalApi.enums import Role, StationState
 from BikeRentalApi.models import BikeStation
@@ -16,5 +13,3 @@ def get(user):
     serializer = StationSerializer(stations, many = True)
 
     return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
-
-
