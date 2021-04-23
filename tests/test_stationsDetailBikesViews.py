@@ -1,6 +1,7 @@
 import pytest
 from datetime import date, time, datetime
 from django.contrib.auth.models import User
+from rest_framework import status
 from django.utils import timezone
 from rest_framework.test import APIRequestFactory
 from rest_framework.utils import json
@@ -72,21 +73,21 @@ class TestStationsDetailViews:
         request.headers = {'Authorization': f'Bearer {user.user.username}'}
 
         response = stations_detail_bikes(request, station.pk)
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
     def test_get_stations_detail_bikes_tech_status(self, factory, station, tech):
         request = factory.get(f'/api/stations/{station.pk}/bikes')
         request.headers = {'Authorization': f'Bearer {tech.user.username}'}
 
         response = stations_detail_bikes(request, station.pk)
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
     def test_get_stations_detail_bikes_admin_status(self, factory, station, admin):
         request = factory.get(f'/api/stations/{station.pk}/bikes')
         request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = stations_detail_bikes(request, station.pk)
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
     def test_get_stations_detail_bikes_user_response(self, factory, station, bike, user):
         request = factory.get(f'/api/stations/{station.pk}/bikes')
@@ -113,7 +114,7 @@ class TestStationsDetailViews:
         request.headers = headers
 
         response = stations_detail_bikes(request, station.pk)
-        assert response.status_code == 201
+        assert response.status_code == status.HTTP_201_CREATED
 
     def test_post_stations_detail_bikes_user_response(self, factory, bike_rented, station, user):
         body = json.dumps({'id': bike_rented.pk})
@@ -141,7 +142,7 @@ class TestStationsDetailViews:
         request.headers = headers
 
         response = stations_detail_bikes(request, station.pk)
-        assert response.status_code == 404
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_post_stations_detail_bikes_bad_request_station(self, factory, bike_rented, user):
         body = json.dumps({'id': bike_rented.pk})
@@ -151,7 +152,7 @@ class TestStationsDetailViews:
         request.headers = headers
 
         response = stations_detail_bikes(request, 1234)
-        assert response.status_code == 404
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_post_stations_detail_bikes_not_own_rental(self, factory, bike_rented, station, user, user2):
         body = json.dumps({'id': bike_rented.pk})
@@ -161,7 +162,7 @@ class TestStationsDetailViews:
         request.headers = headers
 
         response = stations_detail_bikes(request, station.pk)
-        assert response.status_code == 422
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     def test_post_stations_detail_bikes_not_rented(self, factory, bike, station, user):
         body = json.dumps({'id': bike.pk})
@@ -171,4 +172,4 @@ class TestStationsDetailViews:
         request.headers = headers
 
         response = stations_detail_bikes(request, station.pk)
-        assert response.status_code == 422
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY

@@ -12,7 +12,7 @@ from BikeRentalApi.serializers.userSerializer import UserSerializer
 
 def get(user):
     if user.role != Role.Admin:
-        return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_401_UNAUTHORIZED)
+        return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_403_FORBIDDEN)
 
     techs = Tech.objects.all()
     serializer = UserSerializer(techs, many = True)
@@ -22,7 +22,7 @@ def get(user):
 
 def post(request, user):
     if user.role != Role.Admin:
-        return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_401_UNAUTHORIZED)
+        return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_403_FORBIDDEN)
 
     stream = io.BytesIO(request.body)
     data = JSONParser().parse(stream)

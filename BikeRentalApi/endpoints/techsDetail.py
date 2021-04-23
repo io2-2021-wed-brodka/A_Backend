@@ -8,7 +8,7 @@ from BikeRentalApi.serializers.userSerializer import UserSerializer
 
 def delete(user, pk):
     if user.role != Role.Admin:
-        return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_401_UNAUTHORIZED)
+        return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_403_FORBIDDEN)
 
     tech = Tech.objects.filter(pk = pk).first()
 
@@ -23,7 +23,7 @@ def delete(user, pk):
 
 def get(user, pk):
     if user.role != Role.Admin:
-        return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_401_UNAUTHORIZED)
+        return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_403_FORBIDDEN)
 
     tech = Tech.objects.filter(pk = pk).first()
 

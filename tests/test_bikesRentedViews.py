@@ -2,6 +2,7 @@ from datetime import date, time, datetime
 
 import pytest
 from django.contrib.auth.models import User
+from rest_framework import status
 from django.utils import timezone
 from rest_framework.test import APIRequestFactory
 from rest_framework.utils import json
@@ -62,21 +63,21 @@ class TestBikesRentedViews:
         request.headers = {'Authorization': f'Bearer {user.user.username}'}
 
         response = bikes_rented(request)
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
     def test_get_bikes_rented_status_tech(self, tech, factory):
         request = factory.get('/api/bikes/rented')
         request.headers = {'Authorization': f'Bearer {tech.user.username}'}
 
         response = bikes_rented(request)
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
     def test_get_bikes_rented_status_admin(self, admin, factory):
         request = factory.get('/api/bikes/rented')
         request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = bikes_rented(request)
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
     def test_get_bikes_rented_response(self, user, factory, bike1, station):
         request = factory.get('/api/bikes/rented')
@@ -103,7 +104,7 @@ class TestBikesRentedViews:
         request.headers = headers
 
         response = bikes_rented(request)
-        assert response.status_code == 201
+        assert response.status_code == status.HTTP_201_CREATED
 
     def test_post_bikes_rented_bad_request(self, user, factory):
         body = json.dumps({"id": 1337})
@@ -113,7 +114,7 @@ class TestBikesRentedViews:
         request.headers = headers
 
         response = bikes_rented(request)
-        assert response.status_code == 404
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_post_bikes_rented_response(self, user, station, bike2, factory):
         body = json.dumps({"id": bike2.pk})
