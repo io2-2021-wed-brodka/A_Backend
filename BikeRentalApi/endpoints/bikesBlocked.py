@@ -31,9 +31,9 @@ def post(request, user):
     except KeyError:
         return JsonResponse({"message": "Bad data"}, status = status.HTTP_400_BAD_REQUEST)
 
-    try:
-        bike = Bike.objects.get(id = id)
-    except Exception:
+    bike = Bike.objects.filter(id = id).first()
+
+    if bike is None:
         return JsonResponse({"message": "Bike not found"}, status = status.HTTP_404_NOT_FOUND)
 
     if bike.bike_state == BikeState.Blocked or bike.bike_state == BikeState.InService:

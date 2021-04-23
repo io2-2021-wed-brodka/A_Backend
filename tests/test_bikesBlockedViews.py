@@ -137,8 +137,6 @@ class TestBikesListViews:
         response = bikes_blocked(request)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
-
-
     def test_post_bikes_list_admin_status(self, factory, bike_working, admin):
         body = json.dumps({'id': bike_working.id})
         request = factory.post('/api/bikes/blocked', content_type = 'application/json', data = body)
