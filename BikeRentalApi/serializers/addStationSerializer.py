@@ -1,7 +1,6 @@
 from rest_framework import serializers
-from rest_framework.fields import SerializerMethodField, CharField
+from rest_framework.fields import CharField
 
-from BikeRentalApi.enums import BikeState
 from BikeRentalApi.models import BikeStation
 
 

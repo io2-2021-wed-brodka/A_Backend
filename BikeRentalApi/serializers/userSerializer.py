@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from rest_framework.fields import IntegerField, SerializerMethodField, CharField
+from rest_framework.fields import SerializerMethodField, CharField
 
 from BikeRentalApi.models import AppUser
 

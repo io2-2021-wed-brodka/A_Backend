@@ -6,6 +6,7 @@ from BikeRentalApi.enums import Role, BikeState
 
 # DELETE: unblock the given bike
 
+
 def delete(user, pk):
     if user.role < Role.Tech:
         return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_403_FORBIDDEN)
