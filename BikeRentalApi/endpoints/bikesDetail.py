@@ -4,6 +4,8 @@ from rest_framework import status
 from BikeRentalApi.enums import Role, BikeState
 from BikeRentalApi.models import Bike
 
+# DELETE: delete a bike
+
 
 def delete(user, pk):
     if user.role != Role.Admin:

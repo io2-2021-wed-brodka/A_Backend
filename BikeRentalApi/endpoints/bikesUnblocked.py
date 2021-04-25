@@ -4,6 +4,7 @@ from rest_framework import status
 from BikeRentalApi.models import Bike
 from BikeRentalApi.enums import Role, BikeState
 
+# DELETE: unblock the given bike
 
 def delete(user, pk):
     if user.role < Role.Tech:

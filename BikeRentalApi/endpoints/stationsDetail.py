@@ -6,6 +6,9 @@ from BikeRentalApi.models import Bike, BikeStation
 from BikeRentalApi.serializers.stationSerializer import StationSerializer
 from BikeRentalApi.enums import Role, StationState
 
+# GET: get the details of the given station
+# DELETE: delete the given station
+
 
 def get(pk):
     station = get_object_or_404(BikeStation, pk = pk)

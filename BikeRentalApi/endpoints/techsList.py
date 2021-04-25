@@ -9,6 +9,9 @@ from BikeRentalApi.enums import Role
 from BikeRentalApi.models import Tech
 from BikeRentalApi.serializers.userSerializer import UserSerializer
 
+# GET: list all techs
+# POST: create a tech
+
 
 def get(user):
     if user.role != Role.Admin:

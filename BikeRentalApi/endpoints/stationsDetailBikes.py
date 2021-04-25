@@ -9,6 +9,9 @@ from BikeRentalApi.models import Bike, BikeStation, BikeState, Rental
 from BikeRentalApi.serializers.bikeSerializer import BikeSerializer
 from BikeRentalApi.serializers.rentBikeSerializer import RentBikeSerializer
 
+# GET: list all bikes assigned to the given station
+# POST: return a bike to the given station
+
 
 def get(pk):
     bikes = Bike.objects.filter(station_id__exact = pk)

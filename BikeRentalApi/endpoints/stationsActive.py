@@ -5,6 +5,8 @@ from BikeRentalApi.enums import Role, StationState
 from BikeRentalApi.models import BikeStation
 from BikeRentalApi.serializers.stationSerializer import StationSerializer
 
+# GET: list working stations
+
 
 def get(user):
     if user.role != Role.Admin:

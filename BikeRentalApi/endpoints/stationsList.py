@@ -9,6 +9,9 @@ from BikeRentalApi.serializers.addStationSerializer import AddStationSerializer
 from BikeRentalApi.serializers.stationSerializer import StationSerializer
 from BikeRentalApi.enums import Role
 
+# GET: list all stations
+# POST: add new station
+
 
 def get():
     stations = BikeStation.objects.all()

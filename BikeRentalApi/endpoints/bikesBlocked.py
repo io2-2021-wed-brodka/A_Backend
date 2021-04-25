@@ -8,6 +8,9 @@ from BikeRentalApi.models import Bike
 from BikeRentalApi.serializers.bikeSerializer import BikeSerializer
 from BikeRentalApi.enums import Role, BikeState
 
+# POST: blocking bikes
+# GET: list all blocked bikes
+
 
 def get(user):
     if user.role < Role.Tech:

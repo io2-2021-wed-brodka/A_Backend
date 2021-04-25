@@ -6,6 +6,9 @@ from BikeRentalApi.enums import Role
 from BikeRentalApi.models import Tech
 from BikeRentalApi.serializers.userSerializer import UserSerializer
 
+# DELETE: delete a tech
+# GET: get the details of the given tech
+
 
 def delete(user, pk):
     if user.role != Role.Admin:

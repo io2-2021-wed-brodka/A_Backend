@@ -9,6 +9,9 @@ from BikeRentalApi.serializers.addBikeToTheStationSerializer import AddBikeStati
 from BikeRentalApi.serializers.bikeSerializer import BikeSerializer
 from BikeRentalApi.enums import Role, BikeState
 
+# POST: create bikes
+# GET: list all bikes
+
 
 def get(user):
     if user.role < Role.Tech:

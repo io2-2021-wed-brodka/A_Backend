@@ -8,6 +8,9 @@ from BikeRentalApi.enums import Role, StationState
 from BikeRentalApi.models import BikeStation
 from BikeRentalApi.serializers.stationSerializer import StationSerializer
 
+# GET: list all blocked stations
+# POST: block station
+
 
 def get(user):
     if user.role != Role.Admin:
