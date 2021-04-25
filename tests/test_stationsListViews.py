@@ -75,7 +75,7 @@ class TestStationsListViews:
         response = stations_list(request)
         assert json.loads(response.content) == [
             {
-                'id': station.pk,
+                'id': str(station.pk),
                 'name': station.name,
                 'status': station.state.label,
                 'activeBikesCount': Bike.objects.filter(station__pk = station.pk, bike_state = BikeState.Working).count()
@@ -123,4 +123,4 @@ class TestStationsListViews:
         response = stations_list(request)
         data = json.loads(response.content)
 
-        assert isinstance(data['id'], int) and data['name'] == name and set(data.keys()) == {'id', 'name', 'status', 'activeBikesCount'}
+        assert isinstance(data['id'], str) and data['name'] == name and set(data.keys()) == {'id', 'name', 'status', 'activeBikesCount'}

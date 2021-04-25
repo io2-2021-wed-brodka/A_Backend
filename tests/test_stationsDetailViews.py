@@ -84,7 +84,7 @@ class TestStationsDetailViews:
         response = stations_detail(request, station.pk)
 
         assert json.loads(response.content) == {
-            'id': station.pk,
+            'id': str(station.pk),
             'name': station.name,
             'status': station.state.label,
             'activeBikesCount': Bike.objects.filter(station__pk = station.pk, bike_state = BikeState.Working).count()

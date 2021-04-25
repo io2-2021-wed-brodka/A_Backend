@@ -67,7 +67,7 @@ class TestBikesListViews:
 
         assert json.loads(response.content) == [
             {
-                'id': tech.pk,
+                'id': str(tech.pk),
                 'name': tech.user.username
             }
         ]
@@ -115,7 +115,7 @@ class TestBikesListViews:
         response = techs_list(request)
         data = json.loads(response.content)
 
-        assert isinstance(data['id'], int) \
+        assert isinstance(data['id'], str) \
                and data['name'] == 'NowyMariusz' \
                and set(data.keys()) == {'id', 'name'}
 
