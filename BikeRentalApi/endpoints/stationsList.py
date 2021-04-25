@@ -5,6 +5,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework import status
 
 from BikeRentalApi.models import BikeStation
+from BikeRentalApi.serializers.addStationSerializer import AddStationSerializer
 from BikeRentalApi.serializers.stationSerializer import StationSerializer
 from BikeRentalApi.enums import Role
 
@@ -21,11 +22,12 @@ def post(request, user):
         return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_403_FORBIDDEN)
 
     stream = io.BytesIO(request.body)
-    serializer = StationSerializer(data = JSONParser().parse(stream))
+    data = JSONParser().parse(stream)
+    serializer = AddStationSerializer(data = data)
 
     if not serializer.is_valid():
         return JsonResponse({}, status = status.HTTP_400_BAD_REQUEST)
 
-    serializer.save()
+    station = serializer.save()
 
-    return JsonResponse(serializer.data, safe = False, status = status.HTTP_201_CREATED)
+    return JsonResponse(StationSerializer(station).data, safe = False, status = status.HTTP_201_CREATED)
