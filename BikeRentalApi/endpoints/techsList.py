@@ -9,6 +9,9 @@ from BikeRentalApi.enums import Role
 from BikeRentalApi.models import Tech
 from BikeRentalApi.serializers.userSerializer import UserSerializer
 
+# GET: list all techs
+# POST: create a tech
+
 
 def get(user):
     if user.role != Role.Admin:
@@ -39,4 +42,4 @@ def post(request, user):
     except User.DoesNotExist:
         user = User.objects.create_user(username, f'{username}@bikes.com', password)
         tech = Tech.objects.create(user = user)
-        return JsonResponse({'id': tech.pk, 'name': tech.user.username})
+        return JsonResponse(UserSerializer(tech).data)

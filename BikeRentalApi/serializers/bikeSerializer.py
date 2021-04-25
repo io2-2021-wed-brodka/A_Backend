@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from rest_framework.fields import IntegerField, SerializerMethodField
+from rest_framework.fields import SerializerMethodField, CharField
 
 from BikeRentalApi.models import Bike
 from .stationSerializer import StationSerializer
@@ -7,7 +7,7 @@ from .userSerializer import UserSerializer
 
 
 class BikeSerializer(serializers.ModelSerializer):
-    id = IntegerField(label = 'ID', read_only = True)
+    id = CharField(label = 'ID', read_only = True)
     status = SerializerMethodField()
     user = SerializerMethodField()
     station = StationSerializer(many = False, read_only = True)

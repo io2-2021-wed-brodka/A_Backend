@@ -10,6 +10,9 @@ from BikeRentalApi.serializers.bikeSerializer import BikeSerializer
 from BikeRentalApi.serializers.rentBikeSerializer import RentBikeSerializer
 from BikeRentalApi.enums import BikeState
 
+# GET: list all bikes rented by a given user
+# POST: rent a new bike
+
 
 def get(user):
     rentals = Rental.objects.filter(user_id__exact = user.pk)

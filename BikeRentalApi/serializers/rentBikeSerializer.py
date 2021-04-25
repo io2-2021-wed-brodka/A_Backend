@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from rest_framework.fields import IntegerField
+from rest_framework.fields import CharField
 
 from BikeRentalApi.models import Bike
 
 
 class RentBikeSerializer(serializers.ModelSerializer):
-    id = IntegerField()
+    id = CharField()
 
     class Meta:
         model = Bike
@@ -13,6 +13,6 @@ class RentBikeSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         try:
-            return Bike.objects.get(id = validated_data['id'])
+            return Bike.objects.get(id = int(validated_data['id']))
         except Bike.DoesNotExist:
             return None

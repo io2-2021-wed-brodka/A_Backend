@@ -86,18 +86,18 @@ class TestBikesRentedViews:
         response = bikes_rented(request)
         assert json.loads(response.content) == [
             {
-                'id': bike1.pk,
+                'id': str(bike1.pk),
                 'station': None,
                 'status': BikeState.InService.label,
                 'user': {
-                    'id': user.pk,
+                    'id': str(user.pk),
                     'name': user.user.first_name
                 }
             }
         ]
 
     def test_post_bikes_rented_user_status(self, user, bike2, factory):
-        body = json.dumps({"id": bike2.pk})
+        body = json.dumps({"id": str(bike2.pk)})
         request = factory.post('api/bikes/rented', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {user.user.username}'}
         headers.update(request.headers)
@@ -107,7 +107,7 @@ class TestBikesRentedViews:
         assert response.status_code == status.HTTP_201_CREATED
 
     def test_post_bikes_rented_bad_request(self, user, factory):
-        body = json.dumps({"id": 1337})
+        body = json.dumps({"id": '1337'})
         request = factory.post('api/bikes/rented', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {user.user.username}'}
         headers.update(request.headers)
@@ -117,7 +117,7 @@ class TestBikesRentedViews:
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_post_bikes_rented_response(self, user, station, bike2, factory):
-        body = json.dumps({"id": bike2.pk})
+        body = json.dumps({"id": str(bike2.pk)})
         request = factory.post('api/bikes/rented', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {user.user.username}'}
         headers.update(request.headers)
@@ -125,11 +125,11 @@ class TestBikesRentedViews:
 
         response = bikes_rented(request)
         assert json.loads(response.content) == {
-            'id': bike2.pk,
+            'id': str(bike2.pk),
             'station': None,
             'status': BikeState.InService.label,
             'user': {
-                'id': user.pk,
+                'id': str(user.pk),
                 'name': user.user.first_name
             }
         }

@@ -4,6 +4,8 @@ from rest_framework import status
 from BikeRentalApi.enums import Role, StationState
 from BikeRentalApi.models import BikeStation
 
+# DELETE: unblock the given station
+
 
 def delete(user, pk):
     if user.role != Role.Admin:

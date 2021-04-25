@@ -96,11 +96,11 @@ class TestStationsDetailViews:
         response = stations_detail_bikes(request, station.pk)
         assert json.loads(response.content) == [
             {
-                'id': bike.pk,
+                'id': str(bike.pk),
                 'user': None,
                 'status': BikeState.Working.label,
                 'station': {
-                    'id': station.pk,
+                    'id': str(station.pk),
                     'name': station.name,
                     'status': station.state.label,
                     'activeBikesCount': Bike.objects.filter(station__pk = station.pk,
@@ -110,7 +110,7 @@ class TestStationsDetailViews:
         ]
 
     def test_post_stations_detail_bikes_user_status(self, factory, bike_rented, station, user):
-        body = json.dumps({'id': bike_rented.pk})
+        body = json.dumps({'id': str(bike_rented.pk)})
         request = factory.post(f'/api/stations/{station.pk}/bikes', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {user.user.username}'}
         headers.update(request.headers)
@@ -120,7 +120,7 @@ class TestStationsDetailViews:
         assert response.status_code == status.HTTP_201_CREATED
 
     def test_post_stations_detail_bikes_user_response(self, factory, bike_rented, station, user):
-        body = json.dumps({'id': bike_rented.pk})
+        body = json.dumps({'id': str(bike_rented.pk)})
         request = factory.post(f'/api/stations/{station.pk}/bikes', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {user.user.username}'}
         headers.update(request.headers)
@@ -128,11 +128,11 @@ class TestStationsDetailViews:
 
         response = stations_detail_bikes(request, station.pk)
         assert json.loads(response.content) == {
-            'id': bike_rented.pk,
+            'id': str(bike_rented.pk),
             'status': BikeState.Working.label,
             'user': None,
             'station': {
-                'id': station.pk,
+                'id': str(station.pk),
                 'name': station.name,
                 'status': station.state.label,
                 'activeBikesCount': Bike.objects.filter(station__pk = station.pk,
@@ -141,7 +141,7 @@ class TestStationsDetailViews:
         }
 
     def test_post_stations_detail_bikes_bad_request_bike(self, factory, station, user):
-        body = json.dumps({'id': 13313131})
+        body = json.dumps({'id': '13313131'})
         request = factory.post(f'/api/stations/{station.pk}/bikes', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {user.user.username}'}
         headers.update(request.headers)
@@ -151,7 +151,7 @@ class TestStationsDetailViews:
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_post_stations_detail_bikes_bad_request_station(self, factory, bike_rented, user):
-        body = json.dumps({'id': bike_rented.pk})
+        body = json.dumps({'id': str(bike_rented.pk)})
         request = factory.post(f'/api/stations/{1234}/bikes', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {user.user.username}'}
         headers.update(request.headers)
@@ -161,7 +161,7 @@ class TestStationsDetailViews:
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_post_stations_detail_bikes_not_own_rental(self, factory, bike_rented, station, user, user2):
-        body = json.dumps({'id': bike_rented.pk})
+        body = json.dumps({'id': str(bike_rented.pk)})
         request = factory.post(f'/api/stations/{station.pk}/bikes', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {user2.user.username}'}
         headers.update(request.headers)
@@ -171,7 +171,7 @@ class TestStationsDetailViews:
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     def test_post_stations_detail_bikes_not_rented(self, factory, bike, station, user):
-        body = json.dumps({'id': bike.pk})
+        body = json.dumps({'id': str(bike.pk)})
         request = factory.post(f'/api/stations/{station.pk}/bikes', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {user.user.username}'}
         headers.update(request.headers)

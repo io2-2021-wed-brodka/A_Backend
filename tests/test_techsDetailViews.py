@@ -122,6 +122,6 @@ class TestBikesDetailViews:
         response = techs_detail(request, tech2.pk)
 
         assert json.loads(response.content) == {
-            'id': tech_id,
+            'id': str(tech_id),
             'name': tech_name
         }

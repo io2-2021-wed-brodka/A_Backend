@@ -79,15 +79,15 @@ class TestStationsListViews:
         response = stations_blocked(request)
         assert json.loads(response.content) == [
             {
-                'id': station_blocked.pk,
+                'id': str(station_blocked.pk),
                 'name': station_blocked.name,
                 'status': station_blocked.state.label,
-                'activeBikesCount': Bike.objects.filter(station__pk = station_blocked.pk, bike_state = BikeState.Working).count()
+                'activeBikesCount': Bike.objects.filter(station__pk = str(station_blocked.pk), bike_state = BikeState.Working).count()
             }
         ]
 
     def test_post_stations_blocked_user_status(self, factory, user, station_working):
-        body = json.dumps({'id': station_working.pk})
+        body = json.dumps({'id': str(station_working.pk)})
         request = factory.post('/api/stations/blocked', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {user.user.username}'}
         headers.update(request.headers)
@@ -97,7 +97,7 @@ class TestStationsListViews:
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_post_stations_blocked_tech_status(self, factory, tech, station_working):
-        body = json.dumps({'id': station_working.pk})
+        body = json.dumps({'id': str(station_working.pk)})
         request = factory.post('/api/stations/blocked', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {tech.user.username}'}
         headers.update(request.headers)
@@ -107,7 +107,7 @@ class TestStationsListViews:
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_post_stations_blocked_admin_status(self, factory, admin, station_working):
-        body = json.dumps({'id': station_working.pk})
+        body = json.dumps({'id': str(station_working.pk)})
         request = factory.post('/api/stations/blocked', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {admin.user.username}'}
         headers.update(request.headers)
@@ -117,7 +117,7 @@ class TestStationsListViews:
         assert response.status_code == status.HTTP_201_CREATED
 
     def test_post_stations_blocked_on_blocked(self, factory, admin, station_blocked):
-        body = json.dumps({'id': station_blocked.pk})
+        body = json.dumps({'id': str(station_blocked.pk)})
         request = factory.post('/api/stations/blocked', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {admin.user.username}'}
         headers.update(request.headers)
@@ -127,7 +127,7 @@ class TestStationsListViews:
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     def test_post_stations_blocked_response(self, factory, admin, station_working):
-        body = json.dumps({'id': station_working.pk})
+        body = json.dumps({'id': str(station_working.pk)})
         request = factory.post('/api/stations/blocked', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {admin.user.username}'}
         headers.update(request.headers)
@@ -135,8 +135,8 @@ class TestStationsListViews:
 
         response = stations_blocked(request)
         assert json.loads(response.content) == {
-            'id': station_working.pk,
+            'id': str(station_working.pk),
             'name': station_working.name,
             'status': BikeState.Blocked.label,
-            'activeBikesCount': Bike.objects.filter(station__pk = station_working.pk, bike_state = BikeState.Working).count()
+            'activeBikesCount': Bike.objects.filter(station__pk = str(station_working.pk), bike_state = BikeState.Working).count()
         }
