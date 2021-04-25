@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from rest_framework.fields import IntegerField, SerializerMethodField
+from rest_framework.fields import IntegerField, SerializerMethodField, CharField
 
 from BikeRentalApi.models import AppUser
 
 
 class UserSerializer(serializers.ModelSerializer):
-    id = IntegerField(label = 'ID', read_only = True)
+    id = CharField(label = 'ID', read_only = True)
     name = SerializerMethodField()
 
     class Meta:
