@@ -14,4 +14,8 @@ def get(request):
     stations = BikeStation.objects.filter(state = StationState.Working)
     serializer = StationSerializer(stations, many = True)
 
-    return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
+    return JsonResponse(
+        serializer.data,
+        safe = False,
+        status = status.HTTP_200_OK
+    )

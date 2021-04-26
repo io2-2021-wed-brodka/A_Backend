@@ -17,9 +17,13 @@ def delete(request, pk):
         tech = Tech.objects.get(pk = pk)
         Tech.delete(tech)
         User.objects.get(username = tech.user.username).delete()
+
         return HttpResponse(status = status.HTTP_204_NO_CONTENT)
     except Tech.DoesNotExist:
-        return JsonResponse({"message": "Tech not found"}, status = status.HTTP_404_NOT_FOUND)
+        return JsonResponse(
+            {"message": "Tech not found"},
+            status = status.HTTP_404_NOT_FOUND
+        )
 
 
 @RoleRequired([Role.Admin])
@@ -27,7 +31,10 @@ def get(request, pk):
     tech = Tech.objects.filter(pk = pk).first()
 
     if tech is None:
-        return JsonResponse({"message": "Tech not found"}, status = status.HTTP_404_NOT_FOUND)
+        return JsonResponse(
+            {"message": "Tech not found"},
+            status = status.HTTP_404_NOT_FOUND
+        )
 
     data = UserSerializer(tech).data
 

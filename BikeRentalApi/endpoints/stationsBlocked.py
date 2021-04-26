@@ -29,18 +29,30 @@ def post(request):
     try:
         id = int(data['id'])
     except KeyError:
-        return JsonResponse({"message": "Bad data"}, status = status.HTTP_400_BAD_REQUEST)
+        return JsonResponse(
+            {"message": "Bad data"},
+            status = status.HTTP_400_BAD_REQUEST
+        )
 
     try:
         station = BikeStation.objects.get(id = id)
     except BikeStation.DoesNotExist:
-        return JsonResponse({"message": "Station not found"}, status = status.HTTP_404_NOT_FOUND)
+        return JsonResponse(
+            {"message": "Station not found"},
+            status = status.HTTP_404_NOT_FOUND
+        )
 
     if station.state == StationState.Blocked:
-        return JsonResponse({"message": "Station already blocked"},
-                            status = status.HTTP_422_UNPROCESSABLE_ENTITY)
+        return JsonResponse(
+            {"message": "Station already blocked"},
+            status = status.HTTP_422_UNPROCESSABLE_ENTITY
+        )
 
     station.state = StationState.Blocked
     station.save()
 
-    return JsonResponse(StationSerializer(station).data, safe = False, status = status.HTTP_201_CREATED)
+    return JsonResponse(
+        StationSerializer(station).data,
+        safe = False,
+        status = status.HTTP_201_CREATED
+    )

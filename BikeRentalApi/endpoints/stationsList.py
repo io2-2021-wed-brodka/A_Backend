@@ -1,6 +1,6 @@
 import io
 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from rest_framework.parsers import JSONParser
 from rest_framework import status
 
@@ -19,7 +19,11 @@ def get(request):
     stations = BikeStation.objects.all()
     serializer = StationSerializer(stations, many = True)
 
-    return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
+    return JsonResponse(
+        serializer.data,
+        safe = False,
+        status = status.HTTP_200_OK
+    )
 
 
 @RoleRequired([Role.Admin])
@@ -29,8 +33,12 @@ def post(request):
     serializer = AddStationSerializer(data = data)
 
     if not serializer.is_valid():
-        return JsonResponse({}, status = status.HTTP_400_BAD_REQUEST)
+        return HttpResponse(status = status.HTTP_400_BAD_REQUEST)
 
     station = serializer.save()
 
-    return JsonResponse(StationSerializer(station).data, safe = False, status = status.HTTP_201_CREATED)
+    return JsonResponse(
+        StationSerializer(station).data,
+        safe = False,
+        status = status.HTTP_201_CREATED
+    )

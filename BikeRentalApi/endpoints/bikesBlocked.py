@@ -18,7 +18,11 @@ def get(request):
     bikes = Bike.objects.filter(bike_state = BikeState.Blocked)
     serializer = BikeSerializer(bikes, many = True)
 
-    return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
+    return JsonResponse(
+        serializer.data,
+        safe = False,
+        status = status.HTTP_200_OK
+    )
 
 
 @RoleRequired([Role.Tech, Role.Admin])
@@ -29,7 +33,10 @@ def post(request):
     try:
         id = int(data['id'])
     except KeyError:
-        return JsonResponse({"message": "Bad data"}, status = status.HTTP_400_BAD_REQUEST)
+        return JsonResponse(
+            {"message": "Bad data"},
+            status = status.HTTP_400_BAD_REQUEST
+        )
 
     bike = Bike.objects.filter(id = id).first()
 
@@ -37,9 +44,15 @@ def post(request):
         return JsonResponse({"message": "Bike not found"}, status = status.HTTP_404_NOT_FOUND)
 
     if bike.bike_state == BikeState.Blocked or bike.bike_state == BikeState.InService:
-        return JsonResponse({"message": "Bike already blocked or rented"},
-                            status = status.HTTP_422_UNPROCESSABLE_ENTITY)
+        return JsonResponse(
+            {"message": "Bike already blocked or rented"},
+            status = status.HTTP_422_UNPROCESSABLE_ENTITY
+        )
     bike.bike_state = BikeState.Blocked
     bike.save()
 
-    return JsonResponse(BikeSerializer(bike).data, safe = False, status = status.HTTP_201_CREATED)
+    return JsonResponse(
+        BikeSerializer(bike).data,
+        safe = False,
+        status = status.HTTP_201_CREATED
+    )

@@ -13,9 +13,14 @@ class RoleRequired(object):
             try:
                 user = authenticate_bikes_user(args[0])
             except BaseException:
-                return JsonResponse({"message": "Unauthorized"}, status.HTTP_401_UNAUTHORIZED)
+                return JsonResponse(
+                    {"message": "Unauthorized"},
+                    status.HTTP_401_UNAUTHORIZED
+                )
 
-            return f(*args) if user.role in self.roles else JsonResponse({
-                "message": "Forbidden"
-            }, status = status.HTTP_403_FORBIDDEN)
+            return f(*args) if user.role in self.roles \
+                else JsonResponse(
+                    {"message": "Forbidden"},
+                    status = status.HTTP_403_FORBIDDEN
+                )
         return wrapped_f

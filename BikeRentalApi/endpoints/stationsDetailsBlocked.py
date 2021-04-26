@@ -13,13 +13,22 @@ def delete(request, pk):
     try:
         station = BikeStation.objects.get(id = pk)
     except BikeStation.DoesNotExist:
-        return JsonResponse({"message": "Station not found"}, status = status.HTTP_404_NOT_FOUND)
+        return JsonResponse(
+            {"message": "Station not found"},
+            status = status.HTTP_404_NOT_FOUND
+        )
 
     if station is None:
-        return JsonResponse({"message": "Station not found"}, status = status.HTTP_404_NOT_FOUND)
+        return JsonResponse(
+            {"message": "Station not found"},
+            status = status.HTTP_404_NOT_FOUND
+        )
 
     if station.state != StationState.Blocked:
-        return JsonResponse({"message": "Station not blocked"}, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
+        return JsonResponse(
+            {"message": "Station not blocked"},
+            status = status.HTTP_422_UNPROCESSABLE_ENTITY
+        )
 
     station.state = StationState.Working
     station.save()

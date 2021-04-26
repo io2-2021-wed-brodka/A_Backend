@@ -19,7 +19,11 @@ def get(request):
     techs = Tech.objects.all()
     serializer = UserSerializer(techs, many = True)
 
-    return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
+    return JsonResponse(
+        serializer.data,
+        safe = False,
+        status = status.HTTP_200_OK
+    )
 
 
 @RoleRequired([Role.Admin])
@@ -31,12 +35,23 @@ def post(request):
         username = data['name']
         password = data['password']
     except KeyError:
-        return JsonResponse({"message": "Bad data"}, status = status.HTTP_400_BAD_REQUEST)
+        return JsonResponse(
+            {"message": "Bad data"},
+            status = status.HTTP_400_BAD_REQUEST
+        )
 
     try:
         User.objects.get(username = username)
-        return JsonResponse(status = 409, data = {'message': 'Conflicting registration data'})
+        return JsonResponse(
+            {'message': 'Conflicting registration data'},
+            status = status.HTTP_409_CONFLICT
+        )
     except User.DoesNotExist:
         user = User.objects.create_user(username, f'{username}@bikes.com', password)
         tech = Tech.objects.create(user = user)
-        return JsonResponse(UserSerializer(tech).data)
+
+        return JsonResponse(
+            UserSerializer(tech).data,
+            safe = False,
+            status = status.HTTP_200_OK
+        )
