@@ -14,7 +14,7 @@ def insert_station(json_obj):
 
 
 def setup_table(filename: str, model, insert_record):
-    # fisrt clear table
+    # first clear table
     for record in model.objects.all():
         record.delete()
 
