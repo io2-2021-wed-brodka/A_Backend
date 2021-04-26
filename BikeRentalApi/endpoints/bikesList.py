@@ -8,25 +8,22 @@ from BikeRentalApi.models import Bike
 from BikeRentalApi.serializers.addBikeToTheStationSerializer import AddBikeStationSerializer
 from BikeRentalApi.serializers.bikeSerializer import BikeSerializer
 from BikeRentalApi.enums import Role, BikeState
+from BikeRentalApi.decorators.roleRequired import RoleRequired
 
 # POST: create bikes
 # GET: list all bikes
 
 
-def get(user):
-    if user.role < Role.Tech:
-        return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_403_FORBIDDEN)
-
+@RoleRequired([Role.Tech, Role.Admin])
+def get(request):
     bikes = Bike.objects.all()
     serializer = BikeSerializer(bikes, many = True)
 
     return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
 
 
-def post(request, user):
-    if user.role != Role.Admin:
-        return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_403_FORBIDDEN)
-
+@RoleRequired([Role.Admin])
+def post(request):
     stream = io.BytesIO(request.body)
     serializer = AddBikeStationSerializer(data = JSONParser().parse(stream))
 

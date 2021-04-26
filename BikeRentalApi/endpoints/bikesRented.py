@@ -5,16 +5,21 @@ from django.utils import timezone
 from rest_framework.parsers import JSONParser
 from rest_framework import status
 
+from BikeRentalApi.authentication import authenticate_bikes_user
+from BikeRentalApi.decorators.roleRequired import RoleRequired
 from BikeRentalApi.models import Rental
 from BikeRentalApi.serializers.bikeSerializer import BikeSerializer
 from BikeRentalApi.serializers.rentBikeSerializer import RentBikeSerializer
-from BikeRentalApi.enums import BikeState
+from BikeRentalApi.enums import BikeState, Role
+
 
 # GET: list all bikes rented by a given user
 # POST: rent a new bike
 
 
-def get(user):
+@RoleRequired([Role.User, Role.Tech, Role.Admin])
+def get(request):
+    user = authenticate_bikes_user(request)
     rentals = Rental.objects.filter(user_id__exact = user.pk)
     bikes = [rental.bike for rental in rentals]
     serializer = BikeSerializer(bikes, many = True)
@@ -22,7 +27,9 @@ def get(user):
     return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
 
 
-def post(request, user):
+@RoleRequired([Role.User, Role.Tech, Role.Admin])
+def post(request):
+    user = authenticate_bikes_user(request)
     stream = io.BytesIO(request.body)
     serializer = RentBikeSerializer(data = JSONParser().parse(stream))
 

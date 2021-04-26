@@ -5,21 +5,27 @@ from django.http import JsonResponse
 from rest_framework.parsers import JSONParser
 from rest_framework import status
 
+from BikeRentalApi.authentication import authenticate_bikes_user
 from BikeRentalApi.models import Bike, BikeStation, BikeState, Rental
 from BikeRentalApi.serializers.bikeSerializer import BikeSerializer
 from BikeRentalApi.serializers.rentBikeSerializer import RentBikeSerializer
+from BikeRentalApi.decorators.roleRequired import RoleRequired
+from BikeRentalApi.enums import Role
 
 # GET: list all bikes assigned to the given station
 # POST: return a bike to the given station
 
 
-def get(pk):
+@RoleRequired([Role.User, Role.Tech, Role.Admin])
+def get(request, pk):
     bikes = Bike.objects.filter(station_id__exact = pk)
     serializer = BikeSerializer(bikes, many = True)
     return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
 
 
-def post(request, user, pk):
+@RoleRequired([Role.User, Role.Tech, Role.Admin])
+def post(request, pk):
+    user = authenticate_bikes_user(request)
     stream = io.BytesIO(request.body)
     serializer = RentBikeSerializer(data = JSONParser().parse(stream))
 

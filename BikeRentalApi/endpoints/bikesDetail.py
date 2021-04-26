@@ -1,16 +1,15 @@
 from django.http import JsonResponse, HttpResponse
 from rest_framework import status
 
+from BikeRentalApi.decorators.roleRequired import RoleRequired
 from BikeRentalApi.enums import Role, BikeState
 from BikeRentalApi.models import Bike
 
 # DELETE: delete a bike
 
 
-def delete(user, pk):
-    if user.role != Role.Admin:
-        return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_403_FORBIDDEN)
-
+@RoleRequired([Role.Admin])
+def delete(request, pk):
     bike = Bike.objects.filter(pk = pk).first()
 
     if bike is None:

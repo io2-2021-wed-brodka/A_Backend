@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 
+from BikeRentalApi.decorators.roleRequired import RoleRequired
 from BikeRentalApi.enums import Role
 from BikeRentalApi.models import Tech
 from BikeRentalApi.serializers.userSerializer import UserSerializer
@@ -13,20 +14,16 @@ from BikeRentalApi.serializers.userSerializer import UserSerializer
 # POST: create a tech
 
 
-def get(user):
-    if user.role != Role.Admin:
-        return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_403_FORBIDDEN)
-
+@RoleRequired([Role.Admin])
+def get(request):
     techs = Tech.objects.all()
     serializer = UserSerializer(techs, many = True)
 
     return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
 
 
-def post(request, user):
-    if user.role != Role.Admin:
-        return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_403_FORBIDDEN)
-
+@RoleRequired([Role.Admin])
+def post(request):
     stream = io.BytesIO(request.body)
     data = JSONParser().parse(stream)
 

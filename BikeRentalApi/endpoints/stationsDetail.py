@@ -2,6 +2,7 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 
+from BikeRentalApi.decorators.roleRequired import RoleRequired
 from BikeRentalApi.models import Bike, BikeStation
 from BikeRentalApi.serializers.stationSerializer import StationSerializer
 from BikeRentalApi.enums import Role, StationState
@@ -10,17 +11,16 @@ from BikeRentalApi.enums import Role, StationState
 # DELETE: delete the given station
 
 
-def get(pk):
+@RoleRequired([Role.User, Role.Tech, Role.Admin])
+def get(request, pk):
     station = get_object_or_404(BikeStation, pk = pk)
     serializer = StationSerializer(station)
 
     return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
 
 
-def delete(user, pk):
-    if user.role != Role.Admin:
-        return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_403_FORBIDDEN)
-
+@RoleRequired([Role.Admin])
+def delete(request, pk):
     station = BikeStation.objects.filter(pk = pk).first()
 
     if station is None:

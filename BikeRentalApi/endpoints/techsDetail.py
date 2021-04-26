@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponse
 from rest_framework import status
 
+from BikeRentalApi.decorators.roleRequired import RoleRequired
 from BikeRentalApi.enums import Role
 from BikeRentalApi.models import Tech
 from BikeRentalApi.serializers.userSerializer import UserSerializer
@@ -10,10 +11,8 @@ from BikeRentalApi.serializers.userSerializer import UserSerializer
 # GET: get the details of the given tech
 
 
-def delete(user, pk):
-    if user.role != Role.Admin:
-        return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_403_FORBIDDEN)
-
+@RoleRequired([Role.Admin])
+def delete(request, pk):
     try:
         tech = Tech.objects.get(pk = pk)
         Tech.delete(tech)
@@ -23,10 +22,8 @@ def delete(user, pk):
         return JsonResponse({"message": "Tech not found"}, status = status.HTTP_404_NOT_FOUND)
 
 
-def get(user, pk):
-    if user.role != Role.Admin:
-        return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_403_FORBIDDEN)
-
+@RoleRequired([Role.Admin])
+def get(request, pk):
     tech = Tech.objects.filter(pk = pk).first()
 
     if tech is None:

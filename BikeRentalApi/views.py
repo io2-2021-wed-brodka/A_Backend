@@ -1,153 +1,127 @@
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.exceptions import NotFound
 
-from .authentication import authenticate_bikes_user
 from .endpoints import bikesList, bikesDetail, stationsList, stationsDetail, bikesRented, stationsDetailBikes, \
     techsList, techsDetail, stationsBlocked, stationsDetailsBlocked, bikesBlocked, bikesUnblocked, stationsActive
 
 
 @csrf_exempt
 def bikes_list(request):
-    user = authenticate_bikes_user(request)
-
     if request.method == 'GET':
-        return bikesList.get(user)
+        return bikesList.get(request)
     elif request.method == 'POST':
-        return bikesList.post(request, user)
+        return bikesList.post(request)
 
     raise NotFound()
 
 
 @csrf_exempt
 def bikes_detail(request, pk):
-    user = authenticate_bikes_user(request)
     if request.method == 'DELETE':
-        return bikesDetail.delete(user, pk)
+        return bikesDetail.delete(request, pk)
 
     raise NotFound()
 
 
 @csrf_exempt
 def bikes_blocked(request):
-    user = authenticate_bikes_user(request)
-
     if request.method == 'GET':
-        return bikesBlocked.get(user)
+        return bikesBlocked.get(request)
     elif request.method == 'POST':
-        return bikesBlocked.post(request, user)
+        return bikesBlocked.post(request)
 
     raise NotFound()
 
 
 @csrf_exempt
 def bikes_unblocked(request, pk):
-    user = authenticate_bikes_user(request)
-    print(pk)
     if request.method == 'DELETE':
-        return bikesUnblocked.delete(user, pk)
+        return bikesUnblocked.delete(request, pk)
 
     raise NotFound()
 
 
 @csrf_exempt
 def bikes_rented(request):
-    user = authenticate_bikes_user(request)
-
     if request.method == 'GET':
-        return bikesRented.get(user)
+        return bikesRented.get(request)
     elif request.method == 'POST':
-        return bikesRented.post(request, user)
+        return bikesRented.post(request)
 
     raise NotFound()
 
 
 @csrf_exempt
 def stations_list(request):
-    user = authenticate_bikes_user(request)
-
     if request.method == 'GET':
-        return stationsList.get()
+        return stationsList.get(request)
     elif request.method == 'POST':
-        return stationsList.post(request, user)
+        return stationsList.post(request)
 
     raise NotFound()
 
 
 @csrf_exempt
 def stations_detail(request, pk):
-    user = authenticate_bikes_user(request)
-
     if request.method == 'GET':
-        return stationsDetail.get(pk)
+        return stationsDetail.get(request, pk)
     elif request.method == 'DELETE':
-        return stationsDetail.delete(user, pk)
+        return stationsDetail.delete(request, pk)
 
     raise NotFound()
 
 
 @csrf_exempt
 def stations_detail_bikes(request, pk):
-    user = authenticate_bikes_user(request)
-
     if request.method == 'GET':
-        return stationsDetailBikes.get(pk)
+        return stationsDetailBikes.get(request, pk)
     elif request.method == 'POST':
-        return stationsDetailBikes.post(request, user, pk)
+        return stationsDetailBikes.post(request, pk)
 
     raise NotFound()
 
 
 @csrf_exempt
 def stations_blocked(request):
-    user = authenticate_bikes_user(request)
-
     if request.method == 'GET':
-        return stationsBlocked.get(user)
+        return stationsBlocked.get(request)
     elif request.method == 'POST':
-        return stationsBlocked.post(request, user)
+        return stationsBlocked.post(request)
 
     raise NotFound()
 
 
 @csrf_exempt
 def stations_active(request):
-    user = authenticate_bikes_user(request)
-
     if request.method == 'GET':
-        return stationsActive.get(user)
+        return stationsActive.get(request)
 
     raise NotFound()
 
 
 @csrf_exempt
 def stations_blocked_detail(request, pk):
-    user = authenticate_bikes_user(request)
-
     if request.method == 'DELETE':
-        return stationsDetailsBlocked.delete(user, pk)
+        return stationsDetailsBlocked.delete(request, pk)
 
     raise NotFound()
 
 
 @csrf_exempt
 def techs_list(request):
-    user = authenticate_bikes_user(request)
-
     if request.method == 'POST':
-        return techsList.post(request, user)
+        return techsList.post(request)
     elif request.method == 'GET':
-        return techsList.get(user)
+        return techsList.get(request)
 
     raise NotFound()
 
 
 @csrf_exempt
 def techs_detail(request, pk):
-    user = authenticate_bikes_user(request)
-
     if request.method == 'DELETE':
-        return techsDetail.delete(user, pk)
+        return techsDetail.delete(request, pk)
     elif request.method == 'GET':
-        return techsDetail.get(user, pk)
+        return techsDetail.get(request, pk)
 
     raise NotFound()
