@@ -21,3 +21,11 @@
    <venv python> manage.py makemigrations
    <venv python> manage.py migrate
    ```
+
+### API tests setup
+
+Create JSON files with stations and bikes to insert to DB before tests and run
+
+```
+python manage.py runscript test_db_setup --script-args <path/to/stations.json> <path/to/bikes.json>
+```
