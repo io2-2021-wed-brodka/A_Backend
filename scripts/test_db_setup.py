@@ -1,5 +1,8 @@
 import json
-from BikeRentalApi.models import BikeStation, Bike
+
+from django.contrib.auth.models import User
+
+from BikeRentalApi.models import BikeStation, Bike, Admin
 
 
 def insert_bike( json_obj ):
@@ -29,3 +32,6 @@ def run( *args ):
 
 	setup_table( args[0], BikeStation, insert_station )
 	setup_table( args[1], Bike, insert_bike )
+
+	admin_user = User.objects.get( username = 'admin' )
+	Admin.objects.create( user = admin_user )

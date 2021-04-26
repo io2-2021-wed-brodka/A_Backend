@@ -14,7 +14,7 @@
       ```shell
       venv/Scripts/pip3.exe install -r requirements.txt
       ```
-      
+
 3. Run Django migrations to create database.
 
    ```
@@ -27,5 +27,6 @@
 Create JSON files with stations and bikes to insert to DB before tests and run
 
 ```
-python manage.py runscript test_db_setup --script-args <path/to/stations.json> <path/to/bikes.json>
+python manage.py createsuperuser --username=admin --email=admin@bikes.com
+python manage.py runscript test_db_setup --script-args api_test_setup/stations.json api_test_setup/bikes.json
 ```
