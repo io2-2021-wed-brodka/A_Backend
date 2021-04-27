@@ -28,11 +28,8 @@ class TestBikeSerializer:
         bike = Bike.objects.create(station = station, bike_state = BikeState.Working)
         rental_date = date(2005, 7, 14)
         rental_start_time = time(12, 30)
-        rental_end_time = time(12, 55)
         rental_start_datetime = datetime.combine(rental_date, rental_start_time, tzinfo = timezone.utc)
-        rental_end_datetime = datetime.combine(rental_date, rental_end_time, tzinfo = timezone.utc)
-        Rental.objects.create(user = user, bike = bike, start_date = rental_start_datetime,
-                              end_date = rental_end_datetime)
+        Rental.objects.create(user = user, bike = bike, start_date = rental_start_datetime)
         return bike
 
     @pytest.fixture()
@@ -44,10 +41,10 @@ class TestBikeSerializer:
         return bike_serializer.data
 
     def test_contains_expected_fields(self, serialized_bike):
-        assert set(serialized_bike.keys()) == {'id', 'bike_state', 'station', 'user'}
+        assert set(serialized_bike.keys()) == {'id', 'status', 'station', 'user'}
 
     def test_bike_state_field_content(self, serialized_bike, bike):
-        assert serialized_bike['bike_state'] == bike.bike_state
+        assert serialized_bike['status'] == bike.bike_state.label
 
     def test_station_field_content(self, serialized_bike, bike):
         assert serialized_bike['station'] == StationSerializer(bike.station).data

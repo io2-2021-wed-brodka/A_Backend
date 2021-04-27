@@ -1,5 +1,6 @@
 import pytest
 from django.contrib.auth.models import User
+from rest_framework import status
 from rest_framework.test import APIRequestFactory
 from rest_framework.utils import json
 
@@ -32,11 +33,11 @@ class TestLoginView:
 
     def test_login_unauthorized_status(self, login_request, request_body, username, password):
         response = login(login_request)
-        assert response.status_code == 401
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
     def test_login_ok_status(self, login_request, request_body, username, password, auth_user):
         response = login(login_request)
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
     def test_login_unauthorized_body(self, login_request, request_body, username, password):
         response = login(login_request)

@@ -15,6 +15,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_enumfield',
     'corsheaders',
+    'django_extensions',
     'BikeRentalApi'
 ]
 

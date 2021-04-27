@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "name": "Minas Tirith",
+    "status": 0
+  },
+  {
+    "id": 2,
+    "name": "Edoras",
+    "status": 0
+  },
+  {
+    "id": 3,
+    "name": "Rivendell",
+    "status": 0
+  }
+]

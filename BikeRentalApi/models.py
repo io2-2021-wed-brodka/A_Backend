@@ -51,8 +51,7 @@ class Bike(models.Model):
 
 class Rental(models.Model):
     start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
-    user = models.ForeignKey(AppUser, on_delete = models.CASCADE)
+    user = models.ForeignKey(Person, on_delete = models.CASCADE)
     bike = models.ForeignKey(Bike, on_delete = models.CASCADE)
 
     def __str__(self):

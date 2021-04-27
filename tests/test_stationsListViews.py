@@ -1,5 +1,6 @@
 import pytest
 from django.contrib.auth.models import User
+from rest_framework import status
 from rest_framework.test import APIRequestFactory
 from rest_framework.utils import json
 
@@ -50,7 +51,7 @@ class TestStationsListViews:
         request.headers = {'Authorization': f'Bearer {user.user.username}'}
 
         response = stations_list(request)
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_get_stations_list_tech_status(self, factory, tech):
         request = factory.get('/api/stations')
@@ -58,24 +59,26 @@ class TestStationsListViews:
 
         response = stations_list(request)
 
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
     def test_get_stations_list_admin_status(self, factory, admin):
         request = factory.get('/api/stations')
         request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = stations_list(request)
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
-    def test_get_stations_list_response(self, user, factory, station):
+    def test_get_stations_list_response(self, admin, factory, station):
         request = factory.get('/api/stations')
-        request.headers = {'Authorization': f'Bearer {user.user.username}'}
+        request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = stations_list(request)
         assert json.loads(response.content) == [
             {
-                'id': station.pk,
-                'name': station.name
+                'id': str(station.pk),
+                'name': station.name,
+                'status': station.state.label,
+                'activeBikesCount': Bike.objects.filter(station__pk = station.pk, bike_state = BikeState.Working).count()
             }
         ]
 
@@ -87,7 +90,7 @@ class TestStationsListViews:
         request.headers = headers
 
         response = stations_list(request)
-        assert response.status_code == 401
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_post_stations_list_tech_status(self, factory, tech):
         body = json.dumps({'name': 'New station'})
@@ -97,7 +100,7 @@ class TestStationsListViews:
         request.headers = headers
 
         response = stations_list(request)
-        assert response.status_code == 401
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_post_stations_list_admin_status(self, factory, admin):
         body = json.dumps({'name': 'New station'})
@@ -107,7 +110,7 @@ class TestStationsListViews:
         request.headers = headers
 
         response = stations_list(request)
-        assert response.status_code == 201
+        assert response.status_code == status.HTTP_201_CREATED
 
     def test_post_stations_list_admin_response(self, factory, admin):
         name = 'New station'
@@ -120,4 +123,4 @@ class TestStationsListViews:
         response = stations_list(request)
         data = json.loads(response.content)
 
-        assert isinstance(data['id'], int) and data['name'] == name and set(data.keys()) == {'id', 'name'}
+        assert isinstance(data['id'], str) and data['name'] == name and set(data.keys()) == {'id', 'name', 'status', 'activeBikesCount'}

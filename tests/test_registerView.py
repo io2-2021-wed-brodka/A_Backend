@@ -1,5 +1,6 @@
 import pytest
 from django.contrib.auth.models import User
+from rest_framework import status
 from rest_framework.test import APIRequestFactory
 from rest_framework.utils import json
 
@@ -37,11 +38,11 @@ class TestRegisterView:
 
     def test_register_conflict_status(self, register_request, request_body, username, password, auth_user):
         response = register(register_request)
-        assert response.status_code == 409
+        assert response.status_code == status.HTTP_409_CONFLICT
 
     def test_register_ok_status(self, register_request, request_body, username, password):
         response = register(register_request)
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
     def test_register_conflict_body(self, register_request, request_body, username, password, auth_user):
         response = register(register_request)

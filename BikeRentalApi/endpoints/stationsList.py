@@ -1,31 +1,44 @@
 import io
 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from rest_framework.parsers import JSONParser
 from rest_framework import status
 
+from BikeRentalApi.decorators.roleRequired import RoleRequired
 from BikeRentalApi.models import BikeStation
+from BikeRentalApi.serializers.addStationSerializer import AddStationSerializer
 from BikeRentalApi.serializers.stationSerializer import StationSerializer
 from BikeRentalApi.enums import Role
 
-
-def get():
-    bikes = BikeStation.objects.all()
-    serializer = StationSerializer(bikes, many = True)
-
-    return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
+# GET: list all stations
+# POST: add new station
 
 
-def post(request, user):
-    if user.role != Role.Admin:
-        return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_401_UNAUTHORIZED)
+@RoleRequired([Role.Tech, Role.Admin])
+def get(request):
+    stations = BikeStation.objects.all()
+    serializer = StationSerializer(stations, many = True)
 
+    return JsonResponse(
+        serializer.data,
+        safe = False,
+        status = status.HTTP_200_OK
+    )
+
+
+@RoleRequired([Role.Admin])
+def post(request):
     stream = io.BytesIO(request.body)
-    serializer = StationSerializer(data = JSONParser().parse(stream))
+    data = JSONParser().parse(stream)
+    serializer = AddStationSerializer(data = data)
 
     if not serializer.is_valid():
-        return JsonResponse({}, status = status.HTTP_400_BAD_REQUEST)
+        return HttpResponse(status = status.HTTP_400_BAD_REQUEST)
 
-    serializer.save()
+    station = serializer.save()
 
-    return JsonResponse(serializer.data, safe = False, status = status.HTTP_201_CREATED)
+    return JsonResponse(
+        StationSerializer(station).data,
+        safe = False,
+        status = status.HTTP_201_CREATED
+    )

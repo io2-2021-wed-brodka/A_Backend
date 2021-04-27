@@ -1,6 +1,7 @@
 import pytest
 from datetime import date, time, datetime
 from django.contrib.auth.models import User
+from rest_framework import status
 from django.utils import timezone
 from rest_framework.test import APIRequestFactory
 from rest_framework.utils import json
@@ -47,6 +48,10 @@ class TestStationsDetailViews:
         return BikeStation.objects.create(name = 'Test station', state = StationState.Working)
 
     @pytest.fixture
+    def blocked_station(self):
+        return BikeStation.objects.create(name = 'Blocked station', state = StationState.Blocked)
+
+    @pytest.fixture
     def empty_station(self):
         return BikeStation.objects.create(name = 'Empty station', state = StationState.Working)
 
@@ -59,11 +64,8 @@ class TestStationsDetailViews:
         bike = Bike.objects.create(station = None, bike_state = BikeState.InService)
         rental_date = date(2005, 7, 14)
         rental_start_time = time(12, 30)
-        rental_end_time = time(12, 55)
         rental_start_datetime = datetime.combine(rental_date, rental_start_time, tzinfo = timezone.utc)
-        rental_end_datetime = datetime.combine(rental_date, rental_end_time, tzinfo = timezone.utc)
-        Rental.objects.create(user = user, bike = bike, start_date = rental_start_datetime,
-                              end_date = rental_end_datetime)
+        Rental.objects.create(user = user, bike = bike, start_date = rental_start_datetime)
         return bike
 
     @pytest.fixture
@@ -75,21 +77,21 @@ class TestStationsDetailViews:
         request.headers = {'Authorization': f'Bearer {user.user.username}'}
 
         response = stations_detail_bikes(request, station.pk)
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
     def test_get_stations_detail_bikes_tech_status(self, factory, station, tech):
         request = factory.get(f'/api/stations/{station.pk}/bikes')
         request.headers = {'Authorization': f'Bearer {tech.user.username}'}
 
         response = stations_detail_bikes(request, station.pk)
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
     def test_get_stations_detail_bikes_admin_status(self, factory, station, admin):
         request = factory.get(f'/api/stations/{station.pk}/bikes')
         request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = stations_detail_bikes(request, station.pk)
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
     def test_get_stations_detail_bikes_user_response(self, factory, station, bike, user):
         request = factory.get(f'/api/stations/{station.pk}/bikes')
@@ -98,28 +100,31 @@ class TestStationsDetailViews:
         response = stations_detail_bikes(request, station.pk)
         assert json.loads(response.content) == [
             {
-                'id': bike.pk,
+                'id': str(bike.pk),
                 'user': None,
-                'bike_state': BikeState.Working,
+                'status': BikeState.Working.label,
                 'station': {
-                    'id': station.pk,
-                    'name': station.name
+                    'id': str(station.pk),
+                    'name': station.name,
+                    'status': station.state.label,
+                    'activeBikesCount': Bike.objects.filter(station__pk = station.pk,
+                                                            bike_state = BikeState.Working).count()
                 }
             }
         ]
 
     def test_post_stations_detail_bikes_user_status(self, factory, bike_rented, station, user):
-        body = json.dumps({'id': bike_rented.pk})
+        body = json.dumps({'id': str(bike_rented.pk)})
         request = factory.post(f'/api/stations/{station.pk}/bikes', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {user.user.username}'}
         headers.update(request.headers)
         request.headers = headers
 
         response = stations_detail_bikes(request, station.pk)
-        assert response.status_code == 201
+        assert response.status_code == status.HTTP_201_CREATED
 
     def test_post_stations_detail_bikes_user_response(self, factory, bike_rented, station, user):
-        body = json.dumps({'id': bike_rented.pk})
+        body = json.dumps({'id': str(bike_rented.pk)})
         request = factory.post(f'/api/stations/{station.pk}/bikes', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {user.user.username}'}
         headers.update(request.headers)
@@ -127,51 +132,82 @@ class TestStationsDetailViews:
 
         response = stations_detail_bikes(request, station.pk)
         assert json.loads(response.content) == {
-            'id': bike_rented.pk,
-            'bike_state': BikeState.Working,
+            'id': str(bike_rented.pk),
+            'status': BikeState.Working.label,
             'user': None,
             'station': {
-                'id': station.pk,
-                'name': station.name
+                'id': str(station.pk),
+                'name': station.name,
+                'status': station.state.label,
+                'activeBikesCount': Bike.objects.filter(station__pk = station.pk,
+                                                        bike_state = BikeState.Working).count()
             }
         }
 
     def test_post_stations_detail_bikes_bad_request_bike(self, factory, station, user):
-        body = json.dumps({'id': 13313131})
+        body = json.dumps({'id': '13313131'})
         request = factory.post(f'/api/stations/{station.pk}/bikes', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {user.user.username}'}
         headers.update(request.headers)
         request.headers = headers
 
         response = stations_detail_bikes(request, station.pk)
-        assert response.status_code == 404
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_post_stations_detail_bikes_bad_request_station(self, factory, bike_rented, user):
-        body = json.dumps({'id': bike_rented.pk})
+        body = json.dumps({'id': str(bike_rented.pk)})
         request = factory.post(f'/api/stations/{1234}/bikes', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {user.user.username}'}
         headers.update(request.headers)
         request.headers = headers
 
         response = stations_detail_bikes(request, 1234)
-        assert response.status_code == 404
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_post_stations_detail_bikes_not_own_rental(self, factory, bike_rented, station, user, user2):
-        body = json.dumps({'id': bike_rented.pk})
+        body = json.dumps({'id': str(bike_rented.pk)})
         request = factory.post(f'/api/stations/{station.pk}/bikes', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {user2.user.username}'}
         headers.update(request.headers)
         request.headers = headers
 
         response = stations_detail_bikes(request, station.pk)
-        assert response.status_code == 422
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     def test_post_stations_detail_bikes_not_rented(self, factory, bike, station, user):
-        body = json.dumps({'id': bike.pk})
+        body = json.dumps({'id': str(bike.pk)})
         request = factory.post(f'/api/stations/{station.pk}/bikes', content_type = 'application/json', data = body)
         headers = {'Authorization': f'Bearer {user.user.username}'}
         headers.update(request.headers)
         request.headers = headers
 
         response = stations_detail_bikes(request, station.pk)
-        assert response.status_code == 422
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    def test_get_blocked_stations_detail_bikes_user_status(self, factory, blocked_station, user):
+        request = factory.get(f'/api/stations/{blocked_station.pk}/bikes')
+        request.headers = {'Authorization': f'Bearer {user.user.username}'}
+
+        response = stations_detail_bikes(request, blocked_station.pk)
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_get_blocked_stations_detail_bikes_tech_status(self, factory, blocked_station, tech):
+        request = factory.get(f'/api/stations/{blocked_station.pk}/bikes')
+        request.headers = {'Authorization': f'Bearer {tech.user.username}'}
+
+        response = stations_detail_bikes(request, blocked_station.pk)
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_get_blocked_stations_detail_bikes_admin_status(self, factory, blocked_station, admin):
+        request = factory.get(f'/api/stations/{blocked_station.pk}/bikes')
+        request.headers = {'Authorization': f'Bearer {admin.user.username}'}
+
+        response = stations_detail_bikes(request, blocked_station.pk)
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_get_non_existing_stations_detail_bikes_user_status(self, factory, user):
+        request = factory.get('/api/stations/2137/bikes')
+        request.headers = {'Authorization': f'Bearer {user.user.username}'}
+
+        response = stations_detail_bikes(request, 2137)
+        assert response.status_code == status.HTTP_404_NOT_FOUND

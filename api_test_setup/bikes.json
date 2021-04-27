@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "status": 0,
+    "station": 1
+  },
+  {
+    "id": 2,
+    "status": 0,
+    "station": 1
+  },
+  {
+    "id": 3,
+    "status": 0,
+    "station": 2
+  },
+  {
+    "id": 4,
+    "status": 0,
+    "station": 2
+  },
+  {
+    "id": 5,
+    "status": 0,
+    "station": 3
+  },
+  {
+    "id": 6,
+    "status": 0,
+    "station": 3
+  }
+]
