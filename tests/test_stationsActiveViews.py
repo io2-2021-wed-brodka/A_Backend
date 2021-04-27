@@ -73,11 +73,13 @@ class TestStationsListViews:
         request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = stations_active(request)
-        assert json.loads(response.content) == [
-            {
-                'id': str(station_working.pk),
-                'name': station_working.name,
-                'status': station_working.state.label,
-                'activeBikesCount': Bike.objects.filter(station__pk = station_working.pk, bike_state = BikeState.Working).count()
-            }
-        ]
+        assert json.loads(response.content) == {
+            "stations": [
+                {
+                    'id': str(station_working.pk),
+                    'name': station_working.name,
+                    'status': station_working.state.label,
+                    'activeBikesCount': Bike.objects.filter(station__pk = station_working.pk, bike_state = BikeState.Working).count()
+                }
+            ]
+        }

@@ -20,7 +20,7 @@ def get(request):
     serializer = UserSerializer(techs, many = True)
 
     return JsonResponse(
-        serializer.data,
+        {"techs": serializer.data},
         safe = False,
         status = status.HTTP_200_OK
     )
