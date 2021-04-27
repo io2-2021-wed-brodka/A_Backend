@@ -51,7 +51,7 @@ class TestStationsListViews:
         request.headers = {'Authorization': f'Bearer {user.user.username}'}
 
         response = stations_active(request)
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.status_code == status.HTTP_200_OK
 
     def test_get_stations_active_tech_status(self, factory, tech):
         request = factory.get('/api/stations/blocked')
@@ -59,7 +59,7 @@ class TestStationsListViews:
 
         response = stations_active(request)
 
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.status_code == status.HTTP_200_OK
 
     def test_get_stations_active_admin_status(self, factory, admin):
         request = factory.get('/api/stations/blocked')
