@@ -84,17 +84,19 @@ class TestBikesRentedViews:
         request.headers = {'Authorization': f'Bearer {user.user.username}'}
 
         response = bikes_rented(request)
-        assert json.loads(response.content) == [
-            {
-                'id': str(bike1.pk),
-                'station': None,
-                'status': BikeState.InService.label,
-                'user': {
-                    'id': str(user.pk),
-                    'name': user.user.first_name
+        assert json.loads(response.content) == {
+            "bikes": [
+                {
+                    'id': str(bike1.pk),
+                    'station': None,
+                    'status': BikeState.InService.label,
+                    'user': {
+                        'id': str(user.pk),
+                        'name': user.user.first_name
+                    }
                 }
-            }
-        ]
+            ]
+        }
 
     def test_post_bikes_rented_user_status(self, user, bike2, factory):
         body = json.dumps({"id": str(bike2.pk)})

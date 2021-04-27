@@ -18,7 +18,11 @@ def get(request):
     stations = BikeStation.objects.filter(state = StationState.Blocked)
     serializer = StationSerializer(stations, many = True)
 
-    return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
+    return JsonResponse(
+        {"stations": serializer.data},
+        safe = False,
+        status = status.HTTP_200_OK
+    )
 
 
 @RoleRequired([Role.Admin])

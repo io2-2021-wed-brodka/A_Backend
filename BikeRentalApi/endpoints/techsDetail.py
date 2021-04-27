@@ -38,4 +38,8 @@ def get(request, pk):
 
     data = UserSerializer(tech).data
 
-    return JsonResponse(data, safe = False, status = status.HTTP_200_OK)
+    return JsonResponse(
+        data,
+        safe = False,
+        status = status.HTTP_200_OK
+    )
