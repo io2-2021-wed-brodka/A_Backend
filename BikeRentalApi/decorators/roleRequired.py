@@ -12,10 +12,10 @@ class RoleRequired(object):
         def wrapped_f(*args):
             try:
                 user = authenticate_bikes_user(args[0])
-            except BaseException:
+            except Exception:
                 return JsonResponse(
                     {"message": "Unauthorized"},
-                    status.HTTP_401_UNAUTHORIZED
+                    status = status.HTTP_401_UNAUTHORIZED
                 )
 
             return f(*args) if user.role in self.roles else JsonResponse(
