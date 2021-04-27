@@ -1,16 +1,16 @@
 import io
 
 from django.http import JsonResponse, HttpResponse
-
-from rest_framework.parsers import JSONParser
 from rest_framework import status
+from rest_framework.parsers import JSONParser
 
 from BikeRentalApi.authentication import authenticate_bikes_user
+from BikeRentalApi.decorators.roleRequired import RoleRequired
+from BikeRentalApi.enums import Role, StationState
 from BikeRentalApi.models import Bike, BikeStation, BikeState, Rental
 from BikeRentalApi.serializers.bikeSerializer import BikeSerializer
 from BikeRentalApi.serializers.rentBikeSerializer import RentBikeSerializer
-from BikeRentalApi.decorators.roleRequired import RoleRequired
-from BikeRentalApi.enums import Role
+
 
 # GET: list all bikes assigned to the given station
 # POST: return a bike to the given station
@@ -18,6 +18,16 @@ from BikeRentalApi.enums import Role
 
 @RoleRequired([Role.User, Role.Tech, Role.Admin])
 def get(request, pk):
+    try:
+        station = BikeStation.objects.get(pk = pk)
+    except BikeStation.DoesNotExist:
+        return JsonResponse(
+            {"message": "Station not found"},
+            status = status.HTTP_404_NOT_FOUND
+        )
+    user = authenticate_bikes_user(request)
+    if station.state == StationState.Blocked and user.role == Role.User:
+        return HttpResponse(status = status.HTTP_403_FORBIDDEN)
     bikes = Bike.objects.filter(station_id__exact = pk)
     serializer = BikeSerializer(bikes, many = True)
     return JsonResponse(

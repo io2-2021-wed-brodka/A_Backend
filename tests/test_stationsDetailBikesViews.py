@@ -48,6 +48,10 @@ class TestStationsDetailViews:
         return BikeStation.objects.create(name = 'Test station', state = StationState.Working)
 
     @pytest.fixture
+    def blocked_station(self):
+        return BikeStation.objects.create(name = 'Blocked station', state = StationState.Blocked)
+
+    @pytest.fixture
     def empty_station(self):
         return BikeStation.objects.create(name = 'Empty station', state = StationState.Working)
 
@@ -179,3 +183,31 @@ class TestStationsDetailViews:
 
         response = stations_detail_bikes(request, station.pk)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    def test_get_blocked_stations_detail_bikes_user_status(self, factory, blocked_station, user):
+        request = factory.get(f'/api/stations/{blocked_station.pk}/bikes')
+        request.headers = {'Authorization': f'Bearer {user.user.username}'}
+
+        response = stations_detail_bikes(request, blocked_station.pk)
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_get_blocked_stations_detail_bikes_tech_status(self, factory, blocked_station, tech):
+        request = factory.get(f'/api/stations/{blocked_station.pk}/bikes')
+        request.headers = {'Authorization': f'Bearer {tech.user.username}'}
+
+        response = stations_detail_bikes(request, blocked_station.pk)
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_get_blocked_stations_detail_bikes_admin_status(self, factory, blocked_station, admin):
+        request = factory.get(f'/api/stations/{blocked_station.pk}/bikes')
+        request.headers = {'Authorization': f'Bearer {admin.user.username}'}
+
+        response = stations_detail_bikes(request, blocked_station.pk)
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_get_non_existing_stations_detail_bikes_user_status(self, factory, user):
+        request = factory.get('/api/stations/2137/bikes')
+        request.headers = {'Authorization': f'Bearer {user.user.username}'}
+
+        response = stations_detail_bikes(request, 2137)
+        assert response.status_code == status.HTTP_404_NOT_FOUND
