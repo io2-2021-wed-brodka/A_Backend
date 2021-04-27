@@ -35,3 +35,9 @@ class Role(enum.Enum):
     User = 0
     Tech = 1
     Admin = 2
+
+    __labels__ = {
+        User: gettext_lazy("user"),
+        Tech: gettext_lazy("tech"),
+        Admin: gettext_lazy("admin"),
+    }

@@ -12,7 +12,7 @@ def login(request):
     user = authenticate(request, username = request.data['login'], password = request.data['password'])
     if not user:
         return JsonResponse(status = status.HTTP_401_UNAUTHORIZED, data = {'message': 'Bad credentials'})
-    return JsonResponse({'token': user.username})
+    return JsonResponse({'token': user.username, 'role': user.person.role.label})
 
 
 @api_view(['POST'])
