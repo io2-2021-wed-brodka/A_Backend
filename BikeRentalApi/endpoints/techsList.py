@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 
+from BikeRentalApi.decorators.roleRequired import RoleRequired
 from BikeRentalApi.enums import Role
 from BikeRentalApi.models import Tech
 from BikeRentalApi.serializers.userSerializer import UserSerializer
@@ -13,20 +14,20 @@ from BikeRentalApi.serializers.userSerializer import UserSerializer
 # POST: create a tech
 
 
-def get(user):
-    if user.role != Role.Admin:
-        return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_403_FORBIDDEN)
-
+@RoleRequired([Role.Admin])
+def get(request):
     techs = Tech.objects.all()
     serializer = UserSerializer(techs, many = True)
 
-    return JsonResponse(serializer.data, safe = False, status = status.HTTP_200_OK)
+    return JsonResponse(
+        serializer.data,
+        safe = False,
+        status = status.HTTP_200_OK
+    )
 
 
-def post(request, user):
-    if user.role != Role.Admin:
-        return JsonResponse({"message": "Unauthorized"}, status = status.HTTP_403_FORBIDDEN)
-
+@RoleRequired([Role.Admin])
+def post(request):
     stream = io.BytesIO(request.body)
     data = JSONParser().parse(stream)
 
@@ -34,12 +35,23 @@ def post(request, user):
         username = data['name']
         password = data['password']
     except KeyError:
-        return JsonResponse({"message": "Bad data"}, status = status.HTTP_400_BAD_REQUEST)
+        return JsonResponse(
+            {"message": "Bad data"},
+            status = status.HTTP_400_BAD_REQUEST
+        )
 
     try:
         User.objects.get(username = username)
-        return JsonResponse(status = 409, data = {'message': 'Conflicting registration data'})
+        return JsonResponse(
+            {'message': 'Conflicting registration data'},
+            status = status.HTTP_409_CONFLICT
+        )
     except User.DoesNotExist:
         user = User.objects.create_user(username, f'{username}@bikes.com', password)
         tech = Tech.objects.create(user = user)
-        return JsonResponse(UserSerializer(tech).data)
+
+        return JsonResponse(
+            UserSerializer(tech).data,
+            safe = False,
+            status = status.HTTP_200_OK
+        )
