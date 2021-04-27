@@ -14,7 +14,7 @@ from BikeRentalApi.enums import Role
 # POST: add new station
 
 
-@RoleRequired([Role.User, Role.Tech, Role.Admin])
+@RoleRequired([Role.Tech, Role.Admin])
 def get(request):
     stations = BikeStation.objects.all()
     serializer = StationSerializer(stations, many = True)

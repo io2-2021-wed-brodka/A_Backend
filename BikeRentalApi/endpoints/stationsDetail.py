@@ -11,7 +11,7 @@ from BikeRentalApi.enums import Role, StationState
 # DELETE: delete the given station
 
 
-@RoleRequired([Role.User, Role.Tech, Role.Admin])
+@RoleRequired([Role.Tech, Role.Admin])
 def get(request, pk):
     station = get_object_or_404(BikeStation, pk = pk)
     serializer = StationSerializer(station)
