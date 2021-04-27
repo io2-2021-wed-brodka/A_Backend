@@ -9,7 +9,7 @@ from BikeRentalApi.serializers.stationSerializer import StationSerializer
 # GET: list working stations
 
 
-@RoleRequired([Role.Admin])
+@RoleRequired([Role.User, Role.Tech, Role.Admin])
 def get(request):
     stations = BikeStation.objects.filter(state = StationState.Working)
     serializer = StationSerializer(stations, many = True)
