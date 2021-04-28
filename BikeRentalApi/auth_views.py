@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from django.http.response import JsonResponse
+from django.http.response import JsonResponse, HttpResponse
 from rest_framework import status
 from rest_framework.decorators import api_view
 
@@ -30,5 +30,5 @@ def register(request):
 
 
 @api_view(['POST'])
-def logout():
-    return JsonResponse(status = status.HTTP_204_NO_CONTENT)
+def logout(request):
+    return HttpResponse(status = status.HTTP_204_NO_CONTENT)
