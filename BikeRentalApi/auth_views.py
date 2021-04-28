@@ -11,8 +11,19 @@ from BikeRentalApi.models import AppUser
 def login(request):
     user = authenticate(request, username = request.data['login'], password = request.data['password'])
     if not user:
-        return JsonResponse(status = status.HTTP_401_UNAUTHORIZED, data = {'message': 'Bad credentials'})
-    return JsonResponse({'token': user.username})
+        return JsonResponse(
+            {'message': 'Bad credentials'},
+            status = status.HTTP_401_UNAUTHORIZED
+        )
+
+    return JsonResponse(
+        {
+            'token': user.username,
+            'role': user.person.role.label
+        },
+        safe = False,
+        status = status.HTTP_200_OK
+    )
 
 
 @api_view(['POST'])
@@ -22,11 +33,17 @@ def register(request):
 
     try:
         User.objects.get(username = username)
-        return JsonResponse(status = status.HTTP_409_CONFLICT, data = {'message': 'Conflicting registration data'})
+        return JsonResponse(
+            {'message': 'Conflicting registration data'},
+            status = status.HTTP_409_CONFLICT
+        )
     except User.DoesNotExist:
         user = User.objects.create_user(username, f'{username}@bikes.com', password)
         AppUser.objects.create(user = user)
-        return JsonResponse({'token': username})
+        return JsonResponse(
+            {'token': username},
+            status = status.HTTP_200_OK
+        )
 
 
 @api_view(['POST'])
