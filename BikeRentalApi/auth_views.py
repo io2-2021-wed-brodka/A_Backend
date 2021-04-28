@@ -47,5 +47,5 @@ def register(request):
 
 
 @api_view(['POST'])
-def logout():
+def logout(request):
     return HttpResponse(status = status.HTTP_204_NO_CONTENT)
