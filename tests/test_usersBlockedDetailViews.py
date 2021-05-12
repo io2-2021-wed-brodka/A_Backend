@@ -65,7 +65,7 @@ class TestUsersBlockedDetailViews:
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_get_users_blocked_detail_admin_bad_user(self, factory, admin):
-        request = factory.delete(f'/api/users/blocked/1457')
+        request = factory.delete('/api/users/blocked/1457')
         request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = users_blocked_detail(request, 1457)

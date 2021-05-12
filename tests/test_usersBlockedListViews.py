@@ -81,7 +81,7 @@ class TestUsersBlockedListViews:
 
     def test_post_users_blocked_list_user_status(self, factory, working_user):
         data = json.dumps({'id': str(working_user.pk)})
-        request = factory.post(f'/api/users/blocked/', content_type = 'application/json', data = data)
+        request = factory.post('/api/users/blocked/', content_type = 'application/json', data = data)
         request.headers = {'Authorization': f'Bearer {working_user.user.username}'}
 
         response = users_blocked_list(request)
@@ -89,7 +89,7 @@ class TestUsersBlockedListViews:
 
     def test_post_users_blocked_list_tech_status(self, factory, tech, working_user):
         data = json.dumps({'id': str(working_user.pk)})
-        request = factory.post(f'/api/users/blocked/', content_type = 'application/json', data = data)
+        request = factory.post('/api/users/blocked/', content_type = 'application/json', data = data)
         request.headers = {'Authorization': f'Bearer {working_user.user.username}'}
 
         response = users_blocked_list(request)
@@ -97,7 +97,7 @@ class TestUsersBlockedListViews:
 
     def test_post_users_blocked_list_admin_status(self, factory, admin, working_user):
         data = json.dumps({'id': str(working_user.pk)})
-        request = factory.post(f'/api/users/blocked/', content_type = 'application/json', data = data)
+        request = factory.post('/api/users/blocked/', content_type = 'application/json', data = data)
         request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = users_blocked_list(request)
@@ -105,7 +105,7 @@ class TestUsersBlockedListViews:
 
     def test_post_users_blocked_list_admin_bad_request(self, factory, admin):
         data = json.dumps({'id': "1337"})
-        request = factory.post(f'/api/users/blocked/', content_type = 'application/json', data = data)
+        request = factory.post('/api/users/blocked/', content_type = 'application/json', data = data)
         request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = users_blocked_list(request)
@@ -114,7 +114,7 @@ class TestUsersBlockedListViews:
 
     def test_post_users_blocked_list_already_banned_admin(self, factory, admin, blocked_user):
         data = json.dumps({'id': str(blocked_user.pk)})
-        request = factory.post(f'/api/users/blocked/', content_type = 'application/json', data = data)
+        request = factory.post('/api/users/blocked/', content_type = 'application/json', data = data)
         request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = users_blocked_list(request)
@@ -123,7 +123,7 @@ class TestUsersBlockedListViews:
 
     def test_post_users_blocked_list_response(self, factory, admin, working_user):
         data = json.dumps({'id': str(working_user.pk)})
-        request = factory.post(f'/api/users/blocked/', content_type = 'application/json', data = data)
+        request = factory.post('/api/users/blocked/', content_type = 'application/json', data = data)
         request.headers = {'Authorization': f'Bearer {admin.user.username}'}
 
         response = users_blocked_list(request)
