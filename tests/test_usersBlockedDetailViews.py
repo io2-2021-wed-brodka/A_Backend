@@ -2,11 +2,9 @@ import pytest
 from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.test import APIRequestFactory
-from rest_framework.utils import json
 
 from BikeRentalApi import models
-from BikeRentalApi.enums import StationState, UserState
-from BikeRentalApi.models import BikeStation
+from BikeRentalApi.enums import UserState
 from BikeRentalApi.views import users_blocked_detail
 
 

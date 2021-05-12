@@ -11,7 +11,7 @@ from BikeRentalApi.views import stations_blocked
 
 
 @pytest.mark.django_db
-class TestStationsListViews:
+class TestStationsBlockedViews:
 
     @pytest.fixture
     def tech(self):

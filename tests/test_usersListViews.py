@@ -5,7 +5,7 @@ from rest_framework.test import APIRequestFactory
 from rest_framework.utils import json
 
 from BikeRentalApi import models
-from BikeRentalApi.views import techs_list, users_list
+from BikeRentalApi.views import users_list
 
 
 @pytest.mark.django_db
