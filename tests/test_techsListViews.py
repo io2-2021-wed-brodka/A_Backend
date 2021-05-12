@@ -65,12 +65,14 @@ class TestBikesListViews:
 
         response = techs_list(request)
 
-        assert json.loads(response.content) == [
-            {
-                'id': str(tech.pk),
-                'name': tech.user.username
-            }
-        ]
+        assert json.loads(response.content) == {
+            "techs": [
+                {
+                    'id': str(tech.pk),
+                    'name': tech.user.username
+                }
+            ]
+        }
 
     def test_post_techs_list_user_status(self, factory, user):
         body = json.dumps({'name': 'NowyMariusz', 'password': '123456'})

@@ -31,7 +31,7 @@ def get(request, pk):
     bikes = Bike.objects.filter(station_id__exact = pk)
     serializer = BikeSerializer(bikes, many = True)
     return JsonResponse(
-        serializer.data,
+        {"bikes": serializer.data},
         safe = False,
         status = status.HTTP_200_OK
     )

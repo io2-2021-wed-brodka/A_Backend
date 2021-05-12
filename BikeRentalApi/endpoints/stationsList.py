@@ -20,7 +20,7 @@ def get(request):
     serializer = StationSerializer(stations, many = True)
 
     return JsonResponse(
-        serializer.data,
+        {"stations": serializer.data},
         safe = False,
         status = status.HTTP_200_OK
     )

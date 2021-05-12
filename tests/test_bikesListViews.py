@@ -65,19 +65,21 @@ class TestBikesListViews:
         request.headers = {'Authorization': f'Bearer {tech.user.username}'}
 
         response = bikes_list(request)
-        assert json.loads(response.content) == [
-            {
-                'id': str(bike.pk),
-                'station': {
-                    'id': str(station.pk),
-                    'name': 'Test station',
-                    'status': station.state.label,
-                    'activeBikesCount': Bike.objects.filter(station__pk = str(station.pk), bike_state = BikeState.Working).count()
-                },
-                'status': BikeState.Working.label,
-                'user': None
-            }
-        ]
+        assert json.loads(response.content) == {
+            "bikes": [
+                {
+                    'id': str(bike.pk),
+                    'station': {
+                        'id': str(station.pk),
+                        'name': 'Test station',
+                        'status': station.state.label,
+                        'activeBikesCount': Bike.objects.filter(station__pk = str(station.pk), bike_state = BikeState.Working).count()
+                    },
+                    'status': BikeState.Working.label,
+                    'user': None
+                }
+            ]
+        }
 
     def test_post_bikes_list_user_status(self, factory, station, user):
         body = json.dumps({'id': str(station.id)})
