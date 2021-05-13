@@ -4,9 +4,9 @@ from rest_framework import status
 from BikeRentalApi.decorators.roleRequired import RoleRequired
 from BikeRentalApi.enums import Role
 from BikeRentalApi.models import Malfunction
-# POST: create bikes
-# GET: list all bikes
 from BikeRentalApi.serializers.malfunctionSerializer import MalfunctionSerializer
+
+# GET: list all malfunctions
 
 
 @RoleRequired([Role.Tech, Role.Admin])
