@@ -3,7 +3,8 @@ from django.urls import re_path
 from BikeRentalApi import auth_views
 from .views import bikes_list, bikes_detail, bikes_rented, stations_list, stations_detail, stations_detail_bikes, \
     techs_list, techs_detail, stations_blocked, stations_blocked_detail, bikes_blocked, bikes_unblocked, \
-    stations_active, users_list, users_blocked_list, users_blocked_detail
+    stations_active, users_list, users_blocked_list, users_blocked_detail, malfunctions_list
+
 
 urlpatterns = [
     re_path(r'^bikes/?$', bikes_list, name = 'bikes_list'),
@@ -24,5 +25,7 @@ urlpatterns = [
     re_path(r'^techs/(?P<pk>[0-9]+)/?$', techs_detail, name = 'techs_detail'),
     re_path(r'^users/?$', users_list, name = 'users_list'),
     re_path(r'^users/blocked/?$', users_blocked_list, name = 'users_blocked_list'),
-    re_path(r'^users/blocked/(?P<pk>[0-9]+)/?$', users_blocked_detail, name = 'users_blocked_detail')
+    re_path(r'^users/blocked/(?P<pk>[0-9]+)/?$', users_blocked_detail, name = 'users_blocked_detail'),
+    re_path(r'^malfunctions/?$', malfunctions_list, name = 'malfunctions_list'),
+
 ]

@@ -41,3 +41,8 @@ class Role(enum.Enum):
         Tech: gettext_lazy("tech"),
         Admin: gettext_lazy("admin"),
     }
+
+
+class MalfunctionState(enum.Enum):
+    Fixed = 0
+    NotFixed = 1
