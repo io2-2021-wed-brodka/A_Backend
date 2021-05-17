@@ -50,9 +50,9 @@ def post(request):
             status = status.HTTP_404_NOT_FOUND
         )
 
-    if bike.bike_state == BikeState.InService:
+    if bike.bike_state in [BikeState.InService, BikeState.Blocked]:
         return JsonResponse(
-            {'message': 'Bike is already rented'},
+            {'message': 'Bike is already rented or blocked'},
             status = status.HTTP_422_UNPROCESSABLE_ENTITY
         )
 
