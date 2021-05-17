@@ -28,7 +28,7 @@ def get(request, pk):
     user = authenticate_bikes_user(request)
     if station.state == StationState.Blocked and user.role == Role.User:
         return HttpResponse(status = status.HTTP_403_FORBIDDEN)
-    bikes = Bike.objects.filter(station_id__exact = pk)
+    bikes = Bike.objects.filter(station_id__exact = pk, bike_state = BikeState.Working)
     serializer = BikeSerializer(bikes, many = True)
     return JsonResponse(
         {"bikes": serializer.data},
