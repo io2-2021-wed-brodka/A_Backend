@@ -11,6 +11,7 @@ from BikeRentalApi.models import Malfunction, Bike, Rental
 from BikeRentalApi.serializers.malfunctionSerializer import MalfunctionSerializer
 
 # GET: list all malfunctions
+# POST: report a malfunction
 
 
 @RoleRequired([Role.Tech, Role.Admin])
@@ -59,8 +60,7 @@ def post(request):
             status = status.HTTP_422_UNPROCESSABLE_ENTITY
         )
 
-    malfunction = Malfunction(bike = bike, description = description, reporting_user = user.user)
-    malfunction.save()
+    malfunction = Malfunction.objects.create(bike = bike, description = description, reporting_user = user.user)
     rental.delete()
     bike.bike_state = BikeState.Working
     bike.save()
