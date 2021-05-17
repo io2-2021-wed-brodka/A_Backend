@@ -1,3 +1,5 @@
+from datetime import date, time, datetime, timezone
+
 import pytest
 from django.contrib.auth.models import User
 from rest_framework import status
@@ -6,7 +8,7 @@ from rest_framework.utils import json
 
 from BikeRentalApi import models
 from BikeRentalApi.enums import BikeState, StationState
-from BikeRentalApi.models import Bike, BikeStation, Malfunction
+from BikeRentalApi.models import Bike, BikeStation, Malfunction, Rental
 from BikeRentalApi.views import bikes_list, malfunctions_list
 
 
@@ -36,6 +38,15 @@ class TestMalfunctionsListViews:
         return Bike.objects.create(station = station, bike_state = BikeState.Working)
 
     @pytest.fixture
+    def rented_bike(self, user, station):
+        bike = Bike.objects.create(station = None, bike_state = BikeState.InService)
+        rental_date = date(2005, 7, 14)
+        rental_start_time = time(12, 30)
+        rental_start_datetime = datetime.combine(rental_date, rental_start_time, tzinfo = timezone.utc)
+        Rental.objects.create(user = user, bike = bike, start_date = rental_start_datetime)
+        return bike
+
+    @pytest.fixture
     def reporting_user(self):
         user = User.objects.create(
             username = 'reporter', first_name = 'Reporting', last_name = 'Reporter', email = 'reporter@test.com',
@@ -54,14 +65,14 @@ class TestMalfunctionsListViews:
         request = factory.get('/api/malfunctions')
         request.headers = {'Authorization': f'Bearer {user.user.username}'}
 
-        response = bikes_list(request)
+        response = malfunctions_list(request)
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_get_bikes_list_tech_status(self, factory, tech):
         request = factory.get('/api/malfunctions')
         request.headers = {'Authorization': f'Bearer {tech.user.username}'}
 
-        response = bikes_list(request)
+        response = malfunctions_list(request)
         assert response.status_code == status.HTTP_200_OK
 
     def test_get_bikes_list_tech_body(self, factory, user, station, bike, tech, malfunction):
@@ -79,3 +90,60 @@ class TestMalfunctionsListViews:
                 }
             ]
         }
+
+    def test_post_malfunctions_list_user_rented_status(self, factory, user, rented_bike):
+        description = 'description'
+        data = json.dumps({
+            'id': rented_bike.id,
+            'description': description
+        })
+
+        request = factory.post('/api/malfunctions', content_type = 'application/json', data = data)
+        request.headers = {'Authorization': f'Bearer {user.user.username}'}
+
+        response = malfunctions_list(request)
+        assert response.status_code == status.HTTP_201_CREATED
+
+    def test_post_malfunctions_list_user_not_rented_status(self, factory, user, bike):
+        description = 'description'
+        data = json.dumps({
+            'id': bike.id,
+            'description': description
+        })
+
+        request = factory.post('/api/malfunctions', content_type = 'application/json', data = data)
+        request.headers = {'Authorization': f'Bearer {user.user.username}'}
+
+        response = malfunctions_list(request)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    def test_post_malfunctions_list_user_rented_response_headers(self, factory, user, rented_bike):
+        description = 'description'
+        data = json.dumps({
+            'id': rented_bike.id,
+            'description': description
+        })
+
+        request = factory.post('/api/malfunctions', content_type = 'application/json', data = data)
+        request.headers = {'Authorization': f'Bearer {user.user.username}'}
+
+        response = malfunctions_list(request)
+        content = json.loads(response.content)
+        assert set(content.keys()) == {'id', 'bikeId', 'description', 'reportingUserId'}
+
+    def test_post_malfunctions_list_user_rented_response_content(self, factory, user, rented_bike):
+        description = 'description'
+        data = json.dumps({
+            'id': rented_bike.id,
+            'description': description
+        })
+
+        request = factory.post('/api/malfunctions', content_type = 'application/json', data = data)
+        request.headers = {'Authorization': f'Bearer {user.user.username}'}
+
+        response = malfunctions_list(request)
+        content = json.loads(response.content)
+        assert isinstance(content['id'], str) and \
+            content['description'] == description and \
+            content['bikeId'] == str(rented_bike.id) and \
+            content['reportingUserId'] == str(user.user.id)
