@@ -20,6 +20,8 @@ def bikes_list(request):
 def malfunctions_list(request):
     if request.method == 'GET':
         return malfunctionsList.get(request)
+    elif request.method == 'POST':
+        return malfunctionsList.post(request)
 
     raise NotFound()
 
