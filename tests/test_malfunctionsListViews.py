@@ -9,7 +9,7 @@ from rest_framework.utils import json
 from BikeRentalApi import models
 from BikeRentalApi.enums import BikeState, StationState
 from BikeRentalApi.models import Bike, BikeStation, Malfunction, Rental
-from BikeRentalApi.views import bikes_list, malfunctions_list
+from BikeRentalApi.views import malfunctions_list
 
 
 @pytest.mark.django_db
