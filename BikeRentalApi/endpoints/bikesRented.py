@@ -7,7 +7,7 @@ from rest_framework import status
 
 from BikeRentalApi.authentication import authenticate_bikes_user
 from BikeRentalApi.decorators.roleRequired import RoleRequired
-from BikeRentalApi.models import Rental
+from BikeRentalApi.models import Rental, AppUser
 from BikeRentalApi.serializers.bikeSerializer import BikeSerializer
 from BikeRentalApi.serializers.rentBikeSerializer import RentBikeSerializer
 from BikeRentalApi.enums import BikeState, Role, UserState
@@ -35,7 +35,7 @@ def get(request):
 @RoleRequired([Role.User, Role.Tech, Role.Admin])
 def post(request):
     user = authenticate_bikes_user(request)
-    if user.state == UserState.Banned:
+    if isinstance(user, AppUser) and user.state == UserState.Banned:
         return JsonResponse({'message': 'User is banned'}, status = status.HTTP_401_UNAUTHORIZED)
 
     stream = io.BytesIO(request.body)
