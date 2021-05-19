@@ -93,6 +93,13 @@ def stations_detail_bikes(request, pk):
 
 
 @csrf_exempt
+def stations_detail_bikes_all(request, pk):
+    if request.method == 'GET':
+        return stationsDetailBikes.get_all(request, pk)
+    raise NotFound()
+
+
+@csrf_exempt
 def stations_blocked(request):
     if request.method == 'GET':
         return stationsBlocked.get(request)
