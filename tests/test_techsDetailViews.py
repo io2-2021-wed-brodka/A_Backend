@@ -9,7 +9,7 @@ from BikeRentalApi.views import techs_detail
 
 
 @pytest.mark.django_db
-class TestBikesDetailViews:
+class TestTechsDetailViews:
 
     @pytest.fixture
     def tech(self):

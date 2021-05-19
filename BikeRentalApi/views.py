@@ -2,7 +2,8 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.exceptions import NotFound
 
 from .endpoints import bikesList, bikesDetail, stationsList, stationsDetail, bikesRented, stationsDetailBikes, \
-    techsList, techsDetail, stationsBlocked, stationsDetailsBlocked, bikesBlocked, bikesUnblocked, stationsActive
+    techsList, techsDetail, stationsBlocked, stationsDetailsBlocked, bikesBlocked, bikesUnblocked, stationsActive, \
+    usersList, usersBlockedList, usersBlockedDetail, malfunctionsList
 
 
 @csrf_exempt
@@ -11,6 +12,16 @@ def bikes_list(request):
         return bikesList.get(request)
     elif request.method == 'POST':
         return bikesList.post(request)
+
+    raise NotFound()
+
+
+@csrf_exempt
+def malfunctions_list(request):
+    if request.method == 'GET':
+        return malfunctionsList.get(request)
+    elif request.method == 'POST':
+        return malfunctionsList.post(request)
 
     raise NotFound()
 
@@ -82,6 +93,13 @@ def stations_detail_bikes(request, pk):
 
 
 @csrf_exempt
+def stations_detail_bikes_all(request, pk):
+    if request.method == 'GET':
+        return stationsDetailBikes.get_all(request, pk)
+    raise NotFound()
+
+
+@csrf_exempt
 def stations_blocked(request):
     if request.method == 'GET':
         return stationsBlocked.get(request)
@@ -123,5 +141,30 @@ def techs_detail(request, pk):
         return techsDetail.delete(request, pk)
     elif request.method == 'GET':
         return techsDetail.get(request, pk)
+
+    raise NotFound()
+
+
+def users_list(request):
+    if request.method == 'GET':
+        return usersList.get(request)
+
+    raise NotFound()
+
+
+@csrf_exempt
+def users_blocked_list(request):
+    if request.method == 'GET':
+        return usersBlockedList.get(request)
+    elif request.method == 'POST':
+        return usersBlockedList.post(request)
+
+    raise NotFound()
+
+
+@csrf_exempt
+def users_blocked_detail(request, pk):
+    if request.method == 'DELETE':
+        return usersBlockedDetail.delete(request, pk)
 
     raise NotFound()

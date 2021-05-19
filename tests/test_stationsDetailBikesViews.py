@@ -13,7 +13,7 @@ from BikeRentalApi.views import stations_detail_bikes
 
 
 @pytest.mark.django_db
-class TestStationsDetailViews:
+class TestStationsDetailBikesViews:
 
     @pytest.fixture
     def tech(self):

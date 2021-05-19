@@ -11,7 +11,7 @@ from BikeRentalApi.views import stations_active
 
 
 @pytest.mark.django_db
-class TestStationsListViews:
+class TestStationsActiveViews:
 
     @pytest.fixture
     def tech(self):

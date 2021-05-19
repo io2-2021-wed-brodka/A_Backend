@@ -10,7 +10,7 @@ from BikeRentalApi.decorators.roleRequired import RoleRequired
 from BikeRentalApi.models import Rental
 from BikeRentalApi.serializers.bikeSerializer import BikeSerializer
 from BikeRentalApi.serializers.rentBikeSerializer import RentBikeSerializer
-from BikeRentalApi.enums import BikeState, Role
+from BikeRentalApi.enums import BikeState, Role, UserState
 
 
 # GET: list all bikes rented by a given user
@@ -35,6 +35,8 @@ def get(request):
 @RoleRequired([Role.User, Role.Tech, Role.Admin])
 def post(request):
     user = authenticate_bikes_user(request)
+    if user.state == UserState.Banned:
+        return JsonResponse({'message': 'User is banned'}, status = status.HTTP_401_UNAUTHORIZED)
 
     stream = io.BytesIO(request.body)
     serializer = RentBikeSerializer(data = JSONParser().parse(stream))
@@ -50,9 +52,9 @@ def post(request):
             status = status.HTTP_404_NOT_FOUND
         )
 
-    if bike.bike_state == BikeState.InService:
+    if bike.bike_state in [BikeState.InService, BikeState.Blocked]:
         return JsonResponse(
-            {'message': 'Bike is already rented'},
+            {'message': 'Bike is already rented or blocked'},
             status = status.HTTP_422_UNPROCESSABLE_ENTITY
         )
 

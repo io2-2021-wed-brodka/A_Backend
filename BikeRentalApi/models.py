@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django_enumfield import enum
 
-from BikeRentalApi.enums import BikeState, StationState, Role, UserState
+from BikeRentalApi.enums import BikeState, StationState, Role, UserState, MalfunctionState
 
 
 class Person(models.Model):
@@ -56,3 +56,10 @@ class Rental(models.Model):
 
     def __str__(self):
         return f'{self.user} rented {self.bike} from {self.start_date} to {self.end_date}'
+
+
+class Malfunction(models.Model):
+    bike = models.ForeignKey(Bike, on_delete = models.CASCADE)
+    description = models.CharField(max_length = 200)
+    state = enum.EnumField(MalfunctionState, default = MalfunctionState.NotFixed)
+    reporting_user = models.ForeignKey(User, on_delete = models.CASCADE)
