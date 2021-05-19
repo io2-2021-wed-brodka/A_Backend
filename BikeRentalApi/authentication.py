@@ -1,7 +1,7 @@
 from rest_framework.exceptions import PermissionDenied, NotAuthenticated, AuthenticationFailed
 from rest_framework.request import Request
 
-from BikeRentalApi.enums import Role
+from BikeRentalApi.enums import Role, UserState
 from BikeRentalApi.models import Person, User, Admin, Tech, AppUser
 
 
@@ -20,6 +20,9 @@ def authenticate_bikes_user(request: Request):
             return Admin.objects.get(id = person.id)
         elif person.role == Role.Tech:
             return Tech.objects.get(id = person.id)
-        return AppUser.objects.get(id = person.id)
+        app_user = AppUser.objects.get(id = person.id)
+        if app_user.state == UserState.Banned:
+            raise PermissionDenied()
+        return app_user
     except Person.DoesNotExist:
         raise PermissionDenied()
