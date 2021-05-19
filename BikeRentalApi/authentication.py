@@ -1,7 +1,7 @@
 from rest_framework.exceptions import PermissionDenied, NotAuthenticated, AuthenticationFailed
 from rest_framework.request import Request
 
-from BikeRentalApi.enums import Role, UserState
+from BikeRentalApi.enums import Role
 from BikeRentalApi.models import Person, User, Admin, Tech, AppUser
 
 
