@@ -20,9 +20,6 @@ def authenticate_bikes_user(request: Request):
             return Admin.objects.get(id = person.id)
         elif person.role == Role.Tech:
             return Tech.objects.get(id = person.id)
-        app_user = AppUser.objects.get(id = person.id)
-        if app_user.state == UserState.Banned:
-            raise PermissionDenied()
-        return app_user
+        return AppUser.objects.get(id = person.id)
     except Person.DoesNotExist:
         raise PermissionDenied()
