@@ -7,7 +7,7 @@ from .stationSerializer import StationSerializer
 
 class ReservationSerializer(serializers.ModelSerializer):
     id = CharField(source = 'bike.id')
-    station = StationSerializer(many = False, read_only = True)
+    station = StationSerializer(many = False, read_only = True, source = 'bike.station')
     reservedAt = DateTimeField(source = 'start_date')
     reservedTill = DateTimeField(source = 'expire_date')
 

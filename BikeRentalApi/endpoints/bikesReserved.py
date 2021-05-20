@@ -65,7 +65,7 @@ def post(request):
     # approximate start_time to the closest full minute
     start_date = timezone.now()
     approx_start_date = start_date + timedelta(seconds = 59, milliseconds = 999)
-    approx_start_date -= (start_date.second + start_date.milliseconds + start_date.microsecond)
+    approx_start_date -= timedelta(seconds = start_date.second, microseconds = start_date.microsecond)
 
     reservation = Reservation.objects.create(
         bike = bike,
