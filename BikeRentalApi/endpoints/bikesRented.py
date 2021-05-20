@@ -7,7 +7,7 @@ from rest_framework import status
 
 from BikeRentalApi.authentication import authenticate_bikes_user
 from BikeRentalApi.decorators.roleRequired import RoleRequired
-from BikeRentalApi.models import Rental, AppUser
+from BikeRentalApi.models import Rental, AppUser, Reservation
 from BikeRentalApi.serializers.bikeSerializer import BikeSerializer
 from BikeRentalApi.serializers.rentBikeSerializer import RentBikeSerializer
 from BikeRentalApi.enums import BikeState, Role, UserState
@@ -57,6 +57,15 @@ def post(request):
             {'message': 'Bike is already rented or blocked'},
             status = status.HTTP_422_UNPROCESSABLE_ENTITY
         )
+    elif bike.bike_state in [BikeState.Reserved]:
+        reservation = Reservation.objects.get(bike_id = bike.pk)
+        if reservation.user.pk == user.pk:
+            reservation.delete()
+        else:
+            return JsonResponse(
+                {'message': 'Bike is already reserved'},
+                status = status.HTTP_422_UNPROCESSABLE_ENTITY
+            )
 
     bike.bike_state = BikeState.InService
     bike.station = None
