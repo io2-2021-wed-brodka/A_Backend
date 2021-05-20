@@ -16,31 +16,31 @@ class TestMalfunctionsDetailViews:
     @pytest.fixture
     def tech(self):
         tech = User.objects.create(
-            username='Mariusz', first_name='Mariusz', last_name='Tester', email='mariusz@test.com',
-            password='test123')
-        return models.Tech.objects.create(user=tech)
+            username = 'Mariusz', first_name = 'Mariusz', last_name = 'Tester', email = 'mariusz@test.com',
+            password = 'test123')
+        return models.Tech.objects.create(user = tech)
 
     @pytest.fixture
     def user(self):
         user = User.objects.create(
-            username='Janek', first_name='Janek', last_name='Tester', email='Janek@test.com',
-            password='test1234')
-        return models.AppUser.objects.create(user=user)
+            username = 'Janek', first_name = 'Janek', last_name = 'Tester', email = 'Janek@test.com',
+            password = 'test1234')
+        return models.AppUser.objects.create(user = user)
 
     @pytest.fixture
     def admin(self):
         user = User.objects.create(
-            username='Pawel', first_name='Pawel', last_name='Tester', email='Pawel@test.com',
-            password='test1234')
-        return models.Admin.objects.create(user=user)
+            username = 'Pawel', first_name = 'Pawel', last_name = 'Tester', email = 'Pawel@test.com',
+            password = 'test1234')
+        return models.Admin.objects.create(user = user)
 
     @pytest.fixture
     def bike(self, user):
-        return Bike.objects.create(station=None, bike_state=BikeState.Working)
+        return Bike.objects.create(station = None, bike_state = BikeState.Working)
 
     @pytest.fixture
     def malfunction(self, bike, user):
-        return Malfunction.objects.create(bike=bike, description="", reporting_user=user.user)
+        return Malfunction.objects.create(bike = bike, description = "", reporting_user = user.user)
 
     @pytest.fixture
     def factory(self):

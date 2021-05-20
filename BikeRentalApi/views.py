@@ -25,6 +25,7 @@ def malfunctions_list(request):
 
     raise NotFound()
 
+
 @csrf_exempt
 def malfunctions_detail(request, pk):
     if request.method == 'DELETE':

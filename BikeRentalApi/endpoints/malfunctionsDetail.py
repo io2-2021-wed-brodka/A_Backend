@@ -12,7 +12,7 @@ def delete(request, pk):
         malfunction = Malfunction.objects.get(pk = pk)
     except Malfunction.DoesNotExist:
         return JsonResponse(
-            { "message": "Station not found" },
+            {"message": "Station not found"},
             status = status.HTTP_404_NOT_FOUND
         )
 
