@@ -36,7 +36,7 @@ def get(request):
 def post(request):
     user = authenticate_bikes_user(request)
     if isinstance(user, AppUser) and user.state == UserState.Banned:
-        return JsonResponse({'message': 'User is banned'}, status = status.HTTP_401_UNAUTHORIZED)
+        return JsonResponse({'message': 'User is banned'}, status = status.HTTP_403_FORBIDDEN)
 
     stream = io.BytesIO(request.body)
     serializer = RentBikeSerializer(data = JSONParser().parse(stream))
