@@ -48,13 +48,9 @@ def post(request):
 
     try:
         rental = Rental.objects.get(bike_id = bike.id)
-    except Rental.DoesNotExist:
-        return JsonResponse(
-            {'message': 'Bike not rented by calling user'},
-            status = status.HTTP_422_UNPROCESSABLE_ENTITY
-        )
-
-    if rental.user.id != user.id:
+        if rental.user.id != user.id:
+            raise ValueError
+    except Rental.DoesNotExist or ValueError:
         return JsonResponse(
             {'message': 'Bike not rented by calling user'},
             status = status.HTTP_422_UNPROCESSABLE_ENTITY
