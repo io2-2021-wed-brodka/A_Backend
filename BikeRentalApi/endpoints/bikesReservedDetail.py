@@ -3,12 +3,16 @@ from rest_framework import status
 
 from BikeRentalApi.authentication import authenticate_bikes_user
 from BikeRentalApi.decorators.roleRequired import RoleRequired
-from BikeRentalApi.enums import Role, BikeState
-from BikeRentalApi.models import Reservation
+from BikeRentalApi.enums import Role, BikeState, UserState
+from BikeRentalApi.models import Reservation, AppUser
 
 
 @RoleRequired([Role.User, Role.Tech, Role.Admin])
 def delete(request, pk):
+    user = authenticate_bikes_user(request)
+    if isinstance(user, AppUser) and user.state == UserState.Banned:
+        return JsonResponse({'message': 'User is banned'}, status = status.HTTP_403_FORBIDDEN)
+
     try:
         reservation = Reservation.objects.get(bike_id = pk)
     except Reservation.DoesNotExist:
@@ -16,8 +20,6 @@ def delete(request, pk):
             {'message': "Reservation not found"},
             status = status.HTTP_404_NOT_FOUND
         )
-
-    user = authenticate_bikes_user(request)
 
     if reservation.user.pk != user.pk:
         return JsonResponse(
