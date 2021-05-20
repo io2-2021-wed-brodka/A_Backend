@@ -8,7 +8,7 @@ from rest_framework.test import APIRequestFactory
 from rest_framework.utils import json
 
 from BikeRentalApi import models
-from BikeRentalApi.enums import BikeState, StationState
+from BikeRentalApi.enums import BikeState, StationState, UserState
 from BikeRentalApi.models import Bike, BikeStation, Reservation
 from BikeRentalApi.views import bikes_reserved
 
@@ -22,6 +22,13 @@ class TestBikesReservedViews:
             username = 'Janek', first_name = 'Janek', last_name = 'Tester', email = 'Janek@test.com',
             password = 'test1234')
         return models.AppUser.objects.create(user = user)
+
+    @pytest.fixture
+    def blocked_user(self):
+        user = User.objects.create(
+            username = 'Blocked', first_name = 'Blocked', last_name = 'Tester', email = 'blocked@test.com',
+            password = 'test1234')
+        return models.AppUser.objects.create(user = user, state = UserState.Banned)
 
     @pytest.fixture
     def tech(self):
@@ -104,6 +111,7 @@ class TestBikesReservedViews:
     def test_post_bikes_reserved_user_status(self, user, bike_free, factory):
         body = json.dumps({"id": str(bike_free.pk)})
         request = factory.post('api/bikes/reserved', content_type = 'application/json', data = body)
+
         headers = {'Authorization': f'Bearer {user.user.username}'}
         headers.update(request.headers)
         request.headers = headers
@@ -111,19 +119,10 @@ class TestBikesReservedViews:
         response = bikes_reserved(request)
         assert response.status_code == status.HTTP_201_CREATED
 
-    def test_post_bikes_reserved_bad_request(self, user, factory):
-        body = json.dumps({"id": '1337'})
-        request = factory.post('api/bikes/reserved', content_type = 'application/json', data = body)
-        headers = {'Authorization': f'Bearer {user.user.username}'}
-        headers.update(request.headers)
-        request.headers = headers
-
-        response = bikes_reserved(request)
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-
     def test_post_bikes_reserved_response(self, user, station, bike_free, factory):
         body = json.dumps({"id": str(bike_free.pk)})
         request = factory.post('api/bikes/reserved', content_type = 'application/json', data = body)
+
         headers = {'Authorization': f'Bearer {user.user.username}'}
         headers.update(request.headers)
         request.headers = headers
@@ -140,3 +139,58 @@ class TestBikesReservedViews:
                 'status': StationState.Working.label,
                 'activeBikesCount': 0
             }
+
+    def test_post_bikes_reserved_bad_request(self, user, factory):
+        body = json.dumps({"id": '1337'})
+        request = factory.post('api/bikes/reserved', content_type = 'application/json', data = body)
+
+        headers = {'Authorization': f'Bearer {user.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
+
+        response = bikes_reserved(request)
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_post_bikes_reserved_bike_already_taken_status(self, tech, bike_reserved, factory):
+        body = json.dumps({"id": str(bike_reserved.pk)})
+        request = factory.post('api/bikes/reserved', content_type = 'application/json', data = body)
+
+        headers = {'Authorization': f'Bearer {tech.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
+
+        response = bikes_reserved(request)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    def test_post_bikes_reserved_bike_already_taken_response(self, tech, bike_reserved, factory):
+        body = json.dumps({"id": str(bike_reserved.pk)})
+        request = factory.post('api/bikes/reserved', content_type = 'application/json', data = body)
+
+        headers = {'Authorization': f'Bearer {tech.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
+
+        response = bikes_reserved(request)
+        assert set(json.loads(response.content).keys()) == {'message'}
+
+    def test_post_bikes_reserved_user_blocked_status(self, blocked_user, bike_free, factory):
+        body = json.dumps({"id": str(bike_free.pk)})
+        request = factory.post('api/bikes/reserved', content_type = 'application/json', data = body)
+
+        headers = {'Authorization': f'Bearer {blocked_user.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
+
+        response = bikes_reserved(request)
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_post_bikes_reserved_user_blocked_response_headers(self, blocked_user, bike_free, factory):
+        body = json.dumps({"id": str(bike_free.pk)})
+        request = factory.post('api/bikes/reserved', content_type = 'application/json', data = body)
+
+        headers = {'Authorization': f'Bearer {blocked_user.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
+
+        response = bikes_reserved(request)
+        assert set(json.loads(response.content).keys()) == {'message'}

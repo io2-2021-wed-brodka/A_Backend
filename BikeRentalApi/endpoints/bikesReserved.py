@@ -11,8 +11,7 @@ from BikeRentalApi.authentication import authenticate_bikes_user
 from BikeRentalApi.decorators.roleRequired import RoleRequired
 from BikeRentalApi.models import AppUser, Reservation
 from BikeRentalApi.serializers.rentBikeSerializer import RentBikeSerializer
-from BikeRentalApi.enums import BikeState, Role, UserState
-
+from BikeRentalApi.enums import BikeState, Role, UserState, StationState
 
 # GET: list all bikes rented by a given user
 # POST: rent a new bike
@@ -56,6 +55,12 @@ def post(request):
     if bike.bike_state in [BikeState.InService, BikeState.Blocked, BikeState.Reserved]:
         return JsonResponse(
             {'message': 'Bike is already reserved, rented or blocked'},
+            status = status.HTTP_422_UNPROCESSABLE_ENTITY
+        )
+
+    if bike.station.state == StationState.Blocked:
+        return JsonResponse(
+            {'message': 'Station is blocked'},
             status = status.HTTP_422_UNPROCESSABLE_ENTITY
         )
 
