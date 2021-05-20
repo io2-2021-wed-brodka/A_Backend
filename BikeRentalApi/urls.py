@@ -4,12 +4,13 @@ from BikeRentalApi import auth_views
 from .views import bikes_list, bikes_detail, bikes_rented, stations_list, stations_detail, stations_detail_bikes, \
     techs_list, techs_detail, stations_blocked, stations_blocked_detail, bikes_blocked, bikes_unblocked, \
     stations_active, users_list, users_blocked_list, users_blocked_detail, malfunctions_list, \
-    stations_detail_bikes_all, malfunctions_detail
+    stations_detail_bikes_all, malfunctions_detail, bikes_reserved
 
 urlpatterns = [
     re_path(r'^bikes/?$', bikes_list, name = 'bikes_list'),
     re_path(r'^bikes/(?P<pk>[0-9]+)/?$', bikes_detail, name = 'bikes_detail'),
     re_path(r'^bikes/rented/?$', bikes_rented, name = 'bikes_rented'),
+    re_path(r'^bikes/reserved/?$', bikes_reserved, name = 'bikes_reserved'),
     re_path(r'^bikes/blocked/?$', bikes_blocked, name = 'bikes_blocked'),
     re_path(r'^bikes/blocked/(?P<pk>[0-9]+)/?$', bikes_unblocked, name = 'bikes_unblocked'),
     re_path(r'^stations/?$', stations_list, name = 'station_list'),
