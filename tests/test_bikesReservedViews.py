@@ -138,7 +138,7 @@ class TestBikesReservedViews:
                 'name': station.name,
                 'status': StationState.Working.label,
                 'activeBikesCount': 0
-            }
+        }
 
     def test_post_bikes_reserved_bad_request(self, user, factory):
         body = json.dumps({"id": '1337'})
