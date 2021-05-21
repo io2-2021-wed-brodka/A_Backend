@@ -1,10 +1,5 @@
-FROM python:3.9.5-alpine
+FROM python:3
 
-# install required packages
-#RUN apt update \
-#    && apt install -y python3 python3-venv python3-pip
-
-# setup the project
 WORKDIR /bikes_server
 COPY . /bikes_server/
 RUN python3 -m venv venv \
