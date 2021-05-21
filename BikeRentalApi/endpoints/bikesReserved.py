@@ -13,9 +13,10 @@ from BikeRentalApi.models import AppUser, Reservation
 from BikeRentalApi.serializers.rentBikeSerializer import RentBikeSerializer
 from BikeRentalApi.enums import BikeState, Role, UserState, StationState
 
-# GET: list all bikes rented by a given user
-# POST: rent a new bike
 from BikeRentalApi.serializers.reservationSerializer import ReservationSerializer
+
+# GET: list all reservations made by a given user
+# POST: make a reservation for a bike
 
 
 @RoleRequired([Role.User, Role.Tech, Role.Admin])
@@ -67,10 +68,10 @@ def post(request):
     bike.bike_state = BikeState.Reserved
     bike.save()
 
-    # approximate start_time to the closest full minute
+    # approximate start_time to the next full minute
     start_date = timezone.now()
     approx_start_date = start_date + timedelta(seconds = 59, milliseconds = 999)
-    approx_start_date -= timedelta(seconds = start_date.second, microseconds = start_date.microsecond)
+    approx_start_date -= timedelta(seconds = approx_start_date.second, microseconds = approx_start_date.microsecond)
 
     reservation = Reservation.objects.create(
         bike = bike,

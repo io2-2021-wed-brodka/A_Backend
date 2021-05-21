@@ -6,6 +6,8 @@ from BikeRentalApi.decorators.roleRequired import RoleRequired
 from BikeRentalApi.enums import Role, BikeState, UserState
 from BikeRentalApi.models import Reservation, AppUser
 
+# DELETE: cancel a reservation
+
 
 @RoleRequired([Role.User, Role.Tech, Role.Admin])
 def delete(request, pk):
