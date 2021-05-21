@@ -1,4 +1,4 @@
-FROM python3
+FROM python:3.9.5-alpine
 
 # install required packages
 #RUN apt update \
