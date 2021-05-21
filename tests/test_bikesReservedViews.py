@@ -131,7 +131,7 @@ class TestBikesReservedViews:
         content = json.loads(response.content)
 
         assert isinstance(datetime.strptime(content['reservedAt'], '%Y-%m-%dT%H:%M:%S.%fZ'), datetime) and \
-            isinstance(datetime.strptime(content['reservedTill'], '%Y-%m-%dT%H:%M:%S.%fZ'), datetime) and \
+            isinstance(datetime.strptime(content['reservedTill'], '%Y-%m-%dT%H:%M:%SZ'), datetime) and \
             content['id'] == str(bike_free.pk) and \
             content['station'] == {
                 'id': str(station.pk),
