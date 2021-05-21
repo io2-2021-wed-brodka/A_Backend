@@ -2,7 +2,7 @@ FROM ubuntu
 
 # install required packages
 RUN apt update \
-    && apt install -y git python3 python3-venv python3-pip
+    && apt install -y python3 python3-venv python3-pip
 
 # setup the project
 WORKDIR /bikes_server
