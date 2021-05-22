@@ -1,29 +1,30 @@
 import io
+from datetime import timedelta
 
 from django.http import JsonResponse, HttpResponse
 from django.utils import timezone
 from rest_framework.parsers import JSONParser
 from rest_framework import status
 
+from A_Backend.common_settings import TIME_DELTA
 from BikeRentalApi.authentication import authenticate_bikes_user
 from BikeRentalApi.decorators.roleRequired import RoleRequired
-from BikeRentalApi.models import Rental, AppUser, Reservation
-from BikeRentalApi.serializers.bikeSerializer import BikeSerializer
+from BikeRentalApi.models import AppUser, Reservation
 from BikeRentalApi.serializers.rentBikeSerializer import RentBikeSerializer
-from BikeRentalApi.enums import BikeState, Role, UserState
+from BikeRentalApi.enums import BikeState, Role, UserState, StationState
 
+from BikeRentalApi.serializers.reservationSerializer import ReservationSerializer
 
-# GET: list all bikes rented by a given user
-# POST: rent a new bike
+# GET: list all reservations made by a given user
+# POST: make a reservation for a bike
 
 
 @RoleRequired([Role.User, Role.Tech, Role.Admin])
 def get(request):
     user = authenticate_bikes_user(request)
 
-    rentals = Rental.objects.filter(user_id__exact = user.pk)
-    bikes = [rental.bike for rental in rentals]
-    serializer = BikeSerializer(bikes, many = True)
+    reservations = Reservation.objects.filter(user_id__exact = user.pk)
+    serializer = ReservationSerializer(reservations, many = True)
 
     return JsonResponse(
         {"bikes": serializer.data},
@@ -52,29 +53,35 @@ def post(request):
             status = status.HTTP_404_NOT_FOUND
         )
 
-    if bike.bike_state in [BikeState.InService, BikeState.Blocked]:
+    if bike.bike_state in [BikeState.InService, BikeState.Blocked, BikeState.Reserved]:
         return JsonResponse(
-            {'message': 'Bike is already rented or blocked'},
+            {'message': 'Bike is already reserved, rented or blocked'},
             status = status.HTTP_422_UNPROCESSABLE_ENTITY
         )
-    elif bike.bike_state in [BikeState.Reserved]:
-        reservation = Reservation.objects.get(bike_id = bike.pk)
-        if reservation.user.pk == user.pk:
-            reservation.delete()
-        else:
-            return JsonResponse(
-                {'message': 'Bike is already reserved'},
-                status = status.HTTP_422_UNPROCESSABLE_ENTITY
-            )
 
-    bike.bike_state = BikeState.InService
-    bike.station = None
+    if bike.station.state == StationState.Blocked:
+        return JsonResponse(
+            {'message': 'Station is blocked'},
+            status = status.HTTP_422_UNPROCESSABLE_ENTITY
+        )
+
+    bike.bike_state = BikeState.Reserved
     bike.save()
 
-    rental = Rental.objects.create(bike = bike, user = user, start_date = timezone.now())
-    rental.save()
+    # approximate start_time to the next full minute
+    start_date = timezone.now()
+    approx_start_date = start_date + timedelta(seconds = 59, milliseconds = 999)
+    approx_start_date -= timedelta(seconds = approx_start_date.second, microseconds = approx_start_date.microsecond)
 
-    serializer = BikeSerializer(bike)
+    reservation = Reservation.objects.create(
+        bike = bike,
+        user = user,
+        start_date = start_date,
+        expire_date = approx_start_date + TIME_DELTA
+    )
+    reservation.save()
+
+    serializer = ReservationSerializer(reservation)
 
     return JsonResponse(
         serializer.data,

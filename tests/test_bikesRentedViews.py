@@ -1,4 +1,4 @@
-from datetime import date, time, datetime
+from datetime import date, time, datetime, timedelta
 
 import pytest
 from django.contrib.auth.models import User
@@ -9,7 +9,7 @@ from rest_framework.utils import json
 
 from BikeRentalApi import models
 from BikeRentalApi.enums import BikeState, StationState
-from BikeRentalApi.models import Bike, Rental, BikeStation
+from BikeRentalApi.models import Bike, Rental, BikeStation, Reservation
 from BikeRentalApi.views import bikes_rented
 
 
@@ -53,6 +53,14 @@ class TestBikesRentedViews:
     @pytest.fixture
     def bike2(self, user, station):
         return Bike.objects.create(station = station, bike_state = BikeState.Working)
+
+    @pytest.fixture
+    def bike3(self, user, station):
+        bike = Bike.objects.create(station = station, bike_state = BikeState.Reserved)
+        start_date = timezone.now()
+        Reservation.objects.create(bike = bike, user = user, start_date = start_date,
+                                   expire_date = start_date + timedelta(minutes = 3))
+        return bike
 
     @pytest.fixture
     def factory(self):
@@ -117,6 +125,26 @@ class TestBikesRentedViews:
 
         response = bikes_rented(request)
         assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_post_bikes_rented_bike_user_reserved_by_user(self, user, bike3, factory):
+        body = json.dumps({"id": str(bike3.pk)})
+        request = factory.post('api/bikes/rented', content_type = 'application/json', data = body)
+        headers = {'Authorization': f'Bearer {user.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
+
+        response = bikes_rented(request)
+        assert response.status_code == status.HTTP_201_CREATED
+
+    def test_post_bikes_rented_bike_tech_reserved_by_user(self, tech, bike3, factory):
+        body = json.dumps({"id": str(bike3.pk)})
+        request = factory.post('api/bikes/rented', content_type = 'application/json', data = body)
+        headers = {'Authorization': f'Bearer {tech.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
+
+        response = bikes_rented(request)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     def test_post_bikes_rented_response(self, user, station, bike2, factory):
         body = json.dumps({"id": str(bike2.pk)})
