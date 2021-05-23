@@ -6,7 +6,7 @@ from rest_framework.parsers import JSONParser
 
 from BikeRentalApi.authentication import authenticate_bikes_user
 from BikeRentalApi.decorators.roleRequired import RoleRequired
-from BikeRentalApi.enums import Role, BikeState
+from BikeRentalApi.enums import Role
 from BikeRentalApi.models import Malfunction, Bike, Rental
 from BikeRentalApi.serializers.malfunctionSerializer import MalfunctionSerializer
 
