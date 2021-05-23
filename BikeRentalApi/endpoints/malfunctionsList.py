@@ -57,9 +57,6 @@ def post(request):
         )
 
     malfunction = Malfunction.objects.create(bike = bike, description = description, reporting_user = user.user)
-    rental.delete()
-    bike.bike_state = BikeState.Working
-    bike.save()
 
     return JsonResponse(
         MalfunctionSerializer(malfunction).data,
