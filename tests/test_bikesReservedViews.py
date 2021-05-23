@@ -100,7 +100,8 @@ class TestBikesReservedViews:
                         'id': str(station.pk),
                         'name': station.name,
                         'status': StationState.Working.label,
-                        'activeBikesCount': 0
+                        'activeBikesCount': 0,
+                        'bikesLimit': station.bikes_limit
                     },
                     'reservedAt': reservation.start_date.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
                     'reservedTill': reservation.expire_date.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
@@ -137,7 +138,8 @@ class TestBikesReservedViews:
                 'id': str(station.pk),
                 'name': station.name,
                 'status': StationState.Working.label,
-                'activeBikesCount': 0
+                'activeBikesCount': 0,
+                'bikesLimit': station.bikes_limit
         }
 
     def test_post_bikes_reserved_bad_request(self, user, factory):

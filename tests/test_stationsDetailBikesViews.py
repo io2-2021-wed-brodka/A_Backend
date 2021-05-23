@@ -109,7 +109,8 @@ class TestStationsDetailBikesViews:
                         'name': station.name,
                         'status': station.state.label,
                         'activeBikesCount': Bike.objects.filter(station__pk = station.pk,
-                                                                bike_state = BikeState.Working).count()
+                                                                bike_state = BikeState.Working).count(),
+                        'bikesLimit': station.bikes_limit
                     }
                 }
             ]
@@ -142,7 +143,8 @@ class TestStationsDetailBikesViews:
                 'name': station.name,
                 'status': station.state.label,
                 'activeBikesCount': Bike.objects.filter(station__pk = station.pk,
-                                                        bike_state = BikeState.Working).count()
+                                                        bike_state = BikeState.Working).count(),
+                'bikesLimit': station.bikes_limit
             }
         }
 
