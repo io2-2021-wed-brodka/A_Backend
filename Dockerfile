@@ -7,4 +7,4 @@ RUN python3 -m venv venv \
     && export BIKES_SQLITE=1 \
     && venv/bin/python3 manage.py makemigrations \
     && venv/bin/python3 manage.py migrate --run-syncdb \
-    && venv/bin/python3 manage.py runscript docker_setup
+    && venv/bin/python3 manage.py runscript test_db_setup --script-args api_test_setup/stations.json api_test_setup/bikes.json
