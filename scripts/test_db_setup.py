@@ -33,5 +33,5 @@ def run(*args):
     setup_table(args[0], BikeStation, insert_station)
     setup_table(args[1], Bike, insert_bike)
 
-    admin_user = User.objects.get(username = 'admin')
+    admin_user = User.objects.create_superuser(username = 'admin', password = 'admin', email = 'admin@bikes.com')
     Admin.objects.create(user = admin_user)
