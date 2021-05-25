@@ -19,4 +19,7 @@ class StationSerializer(serializers.ModelSerializer):
         return obj.bike_set.filter(bike_state = BikeState.Working).count()
 
     def create(self, validated_data):
-        return BikeStation.objects.create(name = validated_data['name'])
+        if 'bikesLimit' in validated_data.keys():
+            return BikeStation.objects.create(name = validated_data['name'], bikes_limit = validated_data['bikesLimit'])
+        else:
+            return BikeStation.objects.create(name = validated_data['name'])
