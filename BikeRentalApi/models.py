@@ -36,6 +36,7 @@ class AppUser(Person):
 class BikeStation(models.Model):
     name = models.CharField(max_length = 100)
     state = enum.EnumField(StationState, default = StationState.Working)
+    bikes_limit = models.IntegerField(default = 10)
 
     def __str__(self):
         return 'station ' + self.name

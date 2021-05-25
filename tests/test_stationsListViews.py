@@ -79,7 +79,8 @@ class TestStationsListViews:
                     'id': str(station.pk),
                     'name': station.name,
                     'status': station.state.label,
-                    'activeBikesCount': Bike.objects.filter(station__pk = station.pk, bike_state = BikeState.Working).count()
+                    'activeBikesCount': Bike.objects.filter(station__pk = station.pk, bike_state = BikeState.Working).count(),
+                    'bikesLimit': station.bikes_limit
                 }
             ]
         }
@@ -125,4 +126,19 @@ class TestStationsListViews:
         response = stations_list(request)
         data = json.loads(response.content)
 
-        assert isinstance(data['id'], str) and data['name'] == name and set(data.keys()) == {'id', 'name', 'status', 'activeBikesCount'}
+        assert isinstance(data['id'], str) and data['name'] == name and set(data.keys()) == {'id', 'name', 'status', 'activeBikesCount', 'bikesLimit'}
+
+    def test_post_stations_list_add_station_with_limit(self, factory, admin):
+        name = 'New station'
+        limit = 20
+        body = json.dumps({'name': name, 'bikesLimit': limit})
+        request = factory.post('/api/stations', content_type = 'application/json', data = body)
+        headers = {'Authorization': f'Bearer {admin.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
+
+        response = stations_list(request)
+        data = json.loads(response.content)
+
+        assert isinstance(data['id'], str) and data['name'] == name and data['bikesLimit'] == limit and \
+               set(data.keys()) == {'id', 'name', 'status', 'activeBikesCount', 'bikesLimit'}
