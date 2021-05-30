@@ -93,6 +93,8 @@ if os.environ.get('GITHUB_WORKFLOW'):
 
 LANGUAGE_CODE = 'en-us'
 
+BIKE_RENTAL_LIMIT = 4
+
 TIME_DELTA = timedelta(minutes = 30)
 
 TIME_ZONE = 'UTC'
