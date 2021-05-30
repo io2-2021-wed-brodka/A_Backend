@@ -3,6 +3,6 @@ services:
     build: .
     command: venv/bin/gunicorn -b 0.0.0.0:8080 A_Backend.wsgi
     environment:
-      -  BIKES_SQLITE=1
+      - BIKES_SQLITE=1
     ports:
       - "8080:8080"
