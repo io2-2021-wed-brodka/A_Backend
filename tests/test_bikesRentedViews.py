@@ -7,6 +7,7 @@ from django.utils import timezone
 from rest_framework.test import APIRequestFactory
 from rest_framework.utils import json
 
+from A_Backend.common_settings import BIKE_RENTAL_LIMIT
 from BikeRentalApi import models
 from BikeRentalApi.enums import BikeState, StationState
 from BikeRentalApi.models import Bike, Rental, BikeStation, Reservation
@@ -40,6 +41,17 @@ class TestBikesRentedViews:
     @pytest.fixture
     def station(self):
         return BikeStation.objects.create(name = 'Test station', state = StationState.Working)
+
+    @pytest.fixture
+    def user_with_limit(self, station):
+        user = User.objects.create(
+            username = 'Bartosz', first_name = 'Bartosz', last_name = 'Tester', email = 'Bartosz@test.com',
+            password = 'test1234')
+        user = models.AppUser.objects.create(user = user)
+        for i in range(BIKE_RENTAL_LIMIT):
+            bike = Bike.objects.create(station = None, bike_state = BikeState.InService)
+            Rental.objects.create(user_id = user.pk, start_date = timezone.now(), bike_id = bike.id)
+        return user
 
     @pytest.fixture
     def bike1(self, user, station):
@@ -163,3 +175,23 @@ class TestBikesRentedViews:
                 'name': user.user.first_name
             }
         }
+
+    def test_post_bikes_rented_limit_reached_status(self, user_with_limit, station, bike2, factory):
+        body = json.dumps({"id": str(bike2.pk)})
+        request = factory.post('api/bikes/rented', content_type = 'application/json', data = body)
+        headers = {'Authorization': f'Bearer {user_with_limit.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
+
+        response = bikes_rented(request)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    def test_post_bikes_rented_limit_reached_response(self, user_with_limit, station, bike2, factory):
+        body = json.dumps({"id": str(bike2.pk)})
+        request = factory.post('api/bikes/rented', content_type = 'application/json', data = body)
+        headers = {'Authorization': f'Bearer {user_with_limit.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
+
+        response = bikes_rented(request)
+        assert set(json.loads(response.content).keys()) == {'message'}
