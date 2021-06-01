@@ -70,12 +70,18 @@ def post(request, pk):
             status = status.HTTP_404_NOT_FOUND
         )
 
-    station = BikeStation.objects.filter(pk = pk).first()
-
-    if station is None:
+    try:
+        station = BikeStation.objects.get(pk = pk)
+    except BikeStation.DoesNotExist:
         return JsonResponse(
             {"message": "Station not found"},
             status = status.HTTP_404_NOT_FOUND
+        )
+
+    if Bike.objects.filter(station_id__exact = station.pk).count() >= station.bikes_limit:
+        return JsonResponse(
+            {"message": "Cannot return a bike to this station"},
+            status = status.HTTP_422_UNPROCESSABLE_ENTITY
         )
 
     rental = Rental.objects.filter(user = user, bike = bike)
@@ -110,6 +116,7 @@ def get_all(request, pk):
             {"message": "Station not found"},
             status = status.HTTP_404_NOT_FOUND
         )
+
     user = authenticate_bikes_user(request)
     if station.state == StationState.Blocked and user.role == Role.User:
         return HttpResponse(status = status.HTTP_403_FORBIDDEN)
