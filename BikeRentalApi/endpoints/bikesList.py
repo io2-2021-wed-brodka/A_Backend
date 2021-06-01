@@ -39,10 +39,13 @@ def post(request):
     if station is None:
         return HttpResponse(status = status.HTTP_404_NOT_FOUND)
 
-    bike = Bike()
-    bike.bike_state = BikeState.Working
-    bike.station = station
-    bike.save()
+    if Bike.objects.filter(station_id__exact = station.pk).count() >= station.bikes_limit:
+        return JsonResponse(
+            {"message": "Cannot add a new bike to this station"},
+            status = status.HTTP_422_UNPROCESSABLE_ENTITY
+        )
+
+    bike = Bike.objects.create(station = station, bike_state = BikeState.Working)
 
     return JsonResponse(
         BikeSerializer(bike).data,
