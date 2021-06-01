@@ -6,7 +6,7 @@ from django.utils import timezone
 from rest_framework.parsers import JSONParser
 from rest_framework import status
 
-from A_Backend.common_settings import TIME_DELTA
+from A_Backend.common_settings import TIME_DELTA, BIKE_RESERVATION_LIMIT
 from BikeRentalApi.authentication import authenticate_bikes_user
 from BikeRentalApi.decorators.roleRequired import RoleRequired
 from BikeRentalApi.models import AppUser, Reservation
@@ -37,7 +37,16 @@ def get(request):
 def post(request):
     user = authenticate_bikes_user(request)
     if isinstance(user, AppUser) and user.state == UserState.Banned:
-        return JsonResponse({'message': 'User is banned'}, status = status.HTTP_403_FORBIDDEN)
+        return JsonResponse(
+            {'message': 'User is banned'},
+            status = status.HTTP_403_FORBIDDEN
+        )
+
+    if Reservation.objects.filter(user_id = user.pk).count() >= BIKE_RESERVATION_LIMIT:
+        return JsonResponse(
+            {'message': 'Limit of reservations reached'},
+            status = status.HTTP_422_UNPROCESSABLE_ENTITY
+        )
 
     stream = io.BytesIO(request.body)
     serializer = RentBikeSerializer(data = JSONParser().parse(stream))

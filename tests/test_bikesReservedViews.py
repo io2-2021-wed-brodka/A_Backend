@@ -11,6 +11,7 @@ from BikeRentalApi import models
 from BikeRentalApi.enums import BikeState, StationState, UserState
 from BikeRentalApi.models import Bike, BikeStation, Reservation
 from BikeRentalApi.views import bikes_reserved
+from A_Backend.common_settings import BIKE_RESERVATION_LIMIT
 
 
 @pytest.mark.django_db
@@ -47,6 +48,17 @@ class TestBikesReservedViews:
     @pytest.fixture
     def station(self):
         return BikeStation.objects.create(name = 'Test station', state = StationState.Working)
+
+    @pytest.fixture
+    def user_with_reservation_limit(self, station):
+        user = User.objects.create(
+            username = 'Pawel', first_name = 'Pawel', last_name = 'Tester', email = 'Pawel@test.com',
+            password = 'test1234')
+        user = models.AppUser.objects.create(user = user, state = UserState.Active)
+        for i in range(BIKE_RESERVATION_LIMIT):
+            bike = Bike.objects.create(station = station, bike_state = BikeState.Reserved)
+            Reservation.objects.create(bike = bike, user = user, start_date = timezone.now(), expire_date = timezone.now() + timedelta(minutes = 2))
+        return user
 
     @pytest.fixture
     def bike_reserved(self, user, station):
@@ -191,6 +203,28 @@ class TestBikesReservedViews:
         request = factory.post('api/bikes/reserved', content_type = 'application/json', data = body)
 
         headers = {'Authorization': f'Bearer {blocked_user.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
+
+        response = bikes_reserved(request)
+        assert set(json.loads(response.content).keys()) == {'message'}
+
+    def test_post_bikes_reserved_user_with_reservation_limit_status(self, user_with_reservation_limit, bike_free, factory):
+        body = json.dumps({"id": str(bike_free.pk)})
+        request = factory.post('api/bikes/reserved', content_type = 'application/json', data = body)
+
+        headers = {'Authorization': f'Bearer {user_with_reservation_limit.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
+
+        response = bikes_reserved(request)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    def test_post_bikes_reserved_user_with_reservation_limit_response(self, user_with_reservation_limit, bike_free, factory):
+        body = json.dumps({"id": str(bike_free.pk)})
+        request = factory.post('api/bikes/reserved', content_type = 'application/json', data = body)
+
+        headers = {'Authorization': f'Bearer {user_with_reservation_limit.user.username}'}
         headers.update(request.headers)
         request.headers = headers
 
