@@ -78,7 +78,8 @@ class TestBikesBlockedViews:
                         'name': 'Test station',
                         'status': station.state.label,
                         'activeBikesCount': Bike.objects.filter(station__pk = station.pk,
-                                                                bike_state = BikeState.Working).count()
+                                                                bike_state = BikeState.Working).count(),
+                        'bikesLimit': station.bikes_limit
                     },
                     'status': BikeState.Blocked.label,
                     'user': None
@@ -122,7 +123,9 @@ class TestBikesBlockedViews:
                "name": station.name,
                'status': station.state.label,
                'activeBikesCount': Bike.objects.filter(station__pk = station.pk,
-                                                       bike_state = BikeState.Working).count()} \
+                                                       bike_state = BikeState.Working).count(),
+               'bikesLimit': station.bikes_limit
+               } \
             and data['status'] == BikeState.Blocked.label \
             and data['user'] is None \
             and set(data.keys()) == {'id', 'station', 'status', 'user'}
@@ -173,7 +176,9 @@ class TestBikesBlockedViews:
                "name": station.name,
                'status': station.state.label,
                'activeBikesCount': Bike.objects.filter(station__pk = station.pk,
-                                                       bike_state = BikeState.Working).count()} \
+                                                       bike_state = BikeState.Working).count(),
+               'bikesLimit': station.bikes_limit
+               } \
             and data['status'] == BikeState.Blocked.label \
             and data['user'] is None \
             and set(data.keys()) == {'id', 'station', 'status', 'user'}

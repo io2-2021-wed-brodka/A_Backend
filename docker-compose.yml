@@ -1,0 +1,8 @@
+services:
+  web:
+    build: .
+    command: ./run.sh
+    environment:
+      - BIKES_SQLITE=1
+    ports:
+      - "8080:8080"

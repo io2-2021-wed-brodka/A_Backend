@@ -39,6 +39,10 @@ class TestBikesListViews:
         return BikeStation.objects.create(name = 'Test station', state = StationState.Working)
 
     @pytest.fixture
+    def station_full(self):
+        return BikeStation.objects.create(name = 'Test station', state = StationState.Working, bikes_limit = 0)
+
+    @pytest.fixture
     def bike(self, user, station):
         return Bike.objects.create(station = station, bike_state = BikeState.Working)
 
@@ -73,7 +77,8 @@ class TestBikesListViews:
                         'id': str(station.pk),
                         'name': 'Test station',
                         'status': station.state.label,
-                        'activeBikesCount': Bike.objects.filter(station__pk = str(station.pk), bike_state = BikeState.Working).count()
+                        'activeBikesCount': Bike.objects.filter(station__pk = str(station.pk), bike_state = BikeState.Working).count(),
+                        'bikesLimit': station.bikes_limit
                     },
                     'status': BikeState.Working.label,
                     'user': None
@@ -126,7 +131,8 @@ class TestBikesListViews:
                    "id": str(station.pk),
                    "name": station.name,
                    'status': station.state.label,
-                   'activeBikesCount': Bike.objects.filter(station__pk = str(station.pk), bike_state = BikeState.Working).count()} \
+                   'activeBikesCount': Bike.objects.filter(station__pk = str(station.pk), bike_state = BikeState.Working).count(),
+                   'bikesLimit': station.bikes_limit} \
                and data['status'] == BikeState.Working.label \
                and data['user'] is None \
                and set(data.keys()) == {'id', 'station', 'status', 'user'}
@@ -140,3 +146,13 @@ class TestBikesListViews:
 
         response = bikes_list(request)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_post_bikes_list_full_station_status(self, factory, station_full, admin):
+        body = json.dumps({'stationId': station_full.pk})
+        request = factory.post('/bikes', content_type = 'application/json', data = body)
+        headers = {'Authorization': f'Bearer {admin.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
+
+        response = bikes_list(request)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY

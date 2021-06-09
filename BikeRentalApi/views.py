@@ -3,7 +3,8 @@ from rest_framework.exceptions import NotFound
 
 from .endpoints import bikesList, bikesDetail, stationsList, stationsDetail, bikesRented, stationsDetailBikes, \
     techsList, techsDetail, stationsBlocked, stationsDetailsBlocked, bikesBlocked, bikesUnblocked, stationsActive, \
-    usersList, usersBlockedList, usersBlockedDetail, malfunctionsList
+    usersList, usersBlockedList, usersBlockedDetail, malfunctionsList, malfunctionsDetail, bikesReserved, \
+    bikesReservedDetail
 
 
 @csrf_exempt
@@ -22,6 +23,14 @@ def malfunctions_list(request):
         return malfunctionsList.get(request)
     elif request.method == 'POST':
         return malfunctionsList.post(request)
+
+    raise NotFound()
+
+
+@csrf_exempt
+def malfunctions_detail(request, pk):
+    if request.method == 'DELETE':
+        return malfunctionsDetail.delete(request, pk)
 
     raise NotFound()
 
@@ -48,6 +57,24 @@ def bikes_blocked(request):
 def bikes_unblocked(request, pk):
     if request.method == 'DELETE':
         return bikesUnblocked.delete(request, pk)
+
+    raise NotFound()
+
+
+@csrf_exempt
+def bikes_reserved(request):
+    if request.method == 'GET':
+        return bikesReserved.get(request)
+    elif request.method == 'POST':
+        return bikesReserved.post(request)
+
+    raise NotFound()
+
+
+@csrf_exempt
+def bikes_reserved_detail(request, pk):
+    if request.method == 'DELETE':
+        return bikesReservedDetail.delete(request, pk)
 
     raise NotFound()
 

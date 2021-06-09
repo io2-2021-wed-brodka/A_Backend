@@ -48,6 +48,10 @@ class TestStationsDetailBikesViews:
         return BikeStation.objects.create(name = 'Test station', state = StationState.Working)
 
     @pytest.fixture
+    def station_full(self):
+        return BikeStation.objects.create(name = 'Test station', state = StationState.Working, bikes_limit = 0)
+
+    @pytest.fixture
     def blocked_station(self):
         return BikeStation.objects.create(name = 'Blocked station', state = StationState.Blocked)
 
@@ -109,7 +113,8 @@ class TestStationsDetailBikesViews:
                         'name': station.name,
                         'status': station.state.label,
                         'activeBikesCount': Bike.objects.filter(station__pk = station.pk,
-                                                                bike_state = BikeState.Working).count()
+                                                                bike_state = BikeState.Working).count(),
+                        'bikesLimit': station.bikes_limit
                     }
                 }
             ]
@@ -142,7 +147,8 @@ class TestStationsDetailBikesViews:
                 'name': station.name,
                 'status': station.state.label,
                 'activeBikesCount': Bike.objects.filter(station__pk = station.pk,
-                                                        bike_state = BikeState.Working).count()
+                                                        bike_state = BikeState.Working).count(),
+                'bikesLimit': station.bikes_limit
             }
         }
 
@@ -184,6 +190,16 @@ class TestStationsDetailBikesViews:
         request.headers = headers
 
         response = stations_detail_bikes(request, station.pk)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    def test_post_stations_detail_bikes_full_station(self, factory, bike, station_full, user):
+        body = json.dumps({'id': str(bike.pk)})
+        request = factory.post(f'/api/stations/{station_full.pk}/bikes', content_type = 'application/json', data = body)
+        headers = {'Authorization': f'Bearer {user.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
+
+        response = stations_detail_bikes(request, station_full.pk)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     def test_get_blocked_stations_detail_bikes_user_status(self, factory, blocked_station, user):

@@ -1,4 +1,4 @@
-from datetime import date, time, datetime
+from datetime import date, time, datetime, timedelta
 
 import pytest
 from django.contrib.auth.models import User
@@ -7,9 +7,10 @@ from django.utils import timezone
 from rest_framework.test import APIRequestFactory
 from rest_framework.utils import json
 
+from A_Backend.common_settings import BIKE_RENTAL_LIMIT
 from BikeRentalApi import models
 from BikeRentalApi.enums import BikeState, StationState
-from BikeRentalApi.models import Bike, Rental, BikeStation
+from BikeRentalApi.models import Bike, Rental, BikeStation, Reservation
 from BikeRentalApi.views import bikes_rented
 
 
@@ -42,6 +43,17 @@ class TestBikesRentedViews:
         return BikeStation.objects.create(name = 'Test station', state = StationState.Working)
 
     @pytest.fixture
+    def user_with_limit(self, station):
+        user = User.objects.create(
+            username = 'Bartosz', first_name = 'Bartosz', last_name = 'Tester', email = 'Bartosz@test.com',
+            password = 'test1234')
+        user = models.AppUser.objects.create(user = user)
+        for i in range(BIKE_RENTAL_LIMIT):
+            bike = Bike.objects.create(station = None, bike_state = BikeState.InService)
+            Rental.objects.create(user_id = user.pk, start_date = timezone.now(), bike_id = bike.id)
+        return user
+
+    @pytest.fixture
     def bike1(self, user, station):
         bike = Bike.objects.create(station = None, bike_state = BikeState.InService)
         rental_date = date(2005, 7, 14)
@@ -53,6 +65,14 @@ class TestBikesRentedViews:
     @pytest.fixture
     def bike2(self, user, station):
         return Bike.objects.create(station = station, bike_state = BikeState.Working)
+
+    @pytest.fixture
+    def bike3(self, user, station):
+        bike = Bike.objects.create(station = station, bike_state = BikeState.Reserved)
+        start_date = timezone.now()
+        Reservation.objects.create(bike = bike, user = user, start_date = start_date,
+                                   expire_date = start_date + timedelta(minutes = 3))
+        return bike
 
     @pytest.fixture
     def factory(self):
@@ -118,6 +138,26 @@ class TestBikesRentedViews:
         response = bikes_rented(request)
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
+    def test_post_bikes_rented_bike_user_reserved_by_user(self, user, bike3, factory):
+        body = json.dumps({"id": str(bike3.pk)})
+        request = factory.post('api/bikes/rented', content_type = 'application/json', data = body)
+        headers = {'Authorization': f'Bearer {user.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
+
+        response = bikes_rented(request)
+        assert response.status_code == status.HTTP_201_CREATED
+
+    def test_post_bikes_rented_bike_tech_reserved_by_user(self, tech, bike3, factory):
+        body = json.dumps({"id": str(bike3.pk)})
+        request = factory.post('api/bikes/rented', content_type = 'application/json', data = body)
+        headers = {'Authorization': f'Bearer {tech.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
+
+        response = bikes_rented(request)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
     def test_post_bikes_rented_response(self, user, station, bike2, factory):
         body = json.dumps({"id": str(bike2.pk)})
         request = factory.post('api/bikes/rented', content_type = 'application/json', data = body)
@@ -135,3 +175,23 @@ class TestBikesRentedViews:
                 'name': user.user.first_name
             }
         }
+
+    def test_post_bikes_rented_limit_reached_status(self, user_with_limit, station, bike2, factory):
+        body = json.dumps({"id": str(bike2.pk)})
+        request = factory.post('api/bikes/rented', content_type = 'application/json', data = body)
+        headers = {'Authorization': f'Bearer {user_with_limit.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
+
+        response = bikes_rented(request)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    def test_post_bikes_rented_limit_reached_response(self, user_with_limit, station, bike2, factory):
+        body = json.dumps({"id": str(bike2.pk)})
+        request = factory.post('api/bikes/rented', content_type = 'application/json', data = body)
+        headers = {'Authorization': f'Bearer {user_with_limit.user.username}'}
+        headers.update(request.headers)
+        request.headers = headers
+
+        response = bikes_rented(request)
+        assert set(json.loads(response.content).keys()) == {'message'}

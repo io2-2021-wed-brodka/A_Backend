@@ -2,6 +2,22 @@
 
 ## Project setup
 
+### Run with `docker-compose`
+
+From the project root directory run the command
+
+```shell
+docker-compose up
+```
+
+The container will be created and started automatically. The server will be accessible on `localhost:8080`. There will
+already be an `Admin` created with credentials:
+
+**username:** admin\
+**password:** admin
+
+### Local setup
+
 1. After cloning repository, `cd` into it and run `python -m venv venv`.
 2. When the virtual environment is created, install required packages:
     * Linux

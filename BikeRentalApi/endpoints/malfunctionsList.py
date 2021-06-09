@@ -6,7 +6,7 @@ from rest_framework.parsers import JSONParser
 
 from BikeRentalApi.authentication import authenticate_bikes_user
 from BikeRentalApi.decorators.roleRequired import RoleRequired
-from BikeRentalApi.enums import Role, BikeState
+from BikeRentalApi.enums import Role
 from BikeRentalApi.models import Malfunction, Bike, Rental
 from BikeRentalApi.serializers.malfunctionSerializer import MalfunctionSerializer
 
@@ -48,22 +48,15 @@ def post(request):
 
     try:
         rental = Rental.objects.get(bike_id = bike.id)
-    except Rental.DoesNotExist:
-        return JsonResponse(
-            {'message': 'Bike not rented by calling user'},
-            status = status.HTTP_422_UNPROCESSABLE_ENTITY
-        )
-
-    if rental.user.id != user.id:
+        if rental.user.id != user.id:
+            raise ValueError
+    except Rental.DoesNotExist or ValueError:
         return JsonResponse(
             {'message': 'Bike not rented by calling user'},
             status = status.HTTP_422_UNPROCESSABLE_ENTITY
         )
 
     malfunction = Malfunction.objects.create(bike = bike, description = description, reporting_user = user.user)
-    rental.delete()
-    bike.bike_state = BikeState.Working
-    bike.save()
 
     return JsonResponse(
         MalfunctionSerializer(malfunction).data,

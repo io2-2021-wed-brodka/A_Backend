@@ -79,7 +79,8 @@ class TestStationsActiveViews:
                     'id': str(station_working.pk),
                     'name': station_working.name,
                     'status': station_working.state.label,
-                    'activeBikesCount': Bike.objects.filter(station__pk = station_working.pk, bike_state = BikeState.Working).count()
+                    'activeBikesCount': Bike.objects.filter(station__pk = station_working.pk, bike_state = BikeState.Working).count(),
+                    'bikesLimit': station_working.bikes_limit
                 }
             ]
         }

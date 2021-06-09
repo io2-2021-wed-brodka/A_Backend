@@ -83,7 +83,8 @@ class TestStationsBlockedViews:
                     'id': str(station_blocked.pk),
                     'name': station_blocked.name,
                     'status': station_blocked.state.label,
-                    'activeBikesCount': Bike.objects.filter(station__pk = str(station_blocked.pk), bike_state = BikeState.Working).count()
+                    'activeBikesCount': Bike.objects.filter(station__pk = str(station_blocked.pk), bike_state = BikeState.Working).count(),
+                    'bikesLimit': station_blocked.bikes_limit
                 }
             ]
         }
@@ -140,5 +141,6 @@ class TestStationsBlockedViews:
             'id': str(station_working.pk),
             'name': station_working.name,
             'status': BikeState.Blocked.label,
-            'activeBikesCount': Bike.objects.filter(station__pk = str(station_working.pk), bike_state = BikeState.Working).count()
+            'activeBikesCount': Bike.objects.filter(station__pk = str(station_working.pk), bike_state = BikeState.Working).count(),
+            'bikesLimit': station_working.bikes_limit
         }

@@ -1,3 +1,4 @@
+from datetime import timedelta
 from pathlib import Path
 import os
 import dj_database_url
@@ -91,6 +92,11 @@ if os.environ.get('GITHUB_WORKFLOW'):
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
+
+BIKE_RENTAL_LIMIT = 4
+BIKE_RESERVATION_LIMIT = 3
+
+TIME_DELTA = timedelta(minutes = 30)
 
 TIME_ZONE = 'UTC'
 

@@ -36,6 +36,7 @@ class AppUser(Person):
 class BikeStation(models.Model):
     name = models.CharField(max_length = 100)
     state = enum.EnumField(StationState, default = StationState.Working)
+    bikes_limit = models.IntegerField(default = 10)
 
     def __str__(self):
         return 'station ' + self.name
@@ -55,7 +56,17 @@ class Rental(models.Model):
     bike = models.ForeignKey(Bike, on_delete = models.CASCADE)
 
     def __str__(self):
-        return f'{self.user} rented {self.bike} from {self.start_date} to {self.end_date}'
+        return f'{self.user} rented {self.bike} from {self.start_date}'
+
+
+class Reservation(models.Model):
+    start_date = models.DateTimeField()
+    expire_date = models.DateTimeField()
+    user = models.ForeignKey(Person, on_delete = models.CASCADE)
+    bike = models.ForeignKey(Bike, on_delete = models.CASCADE)
+
+    def __str__(self):
+        return f'{self.user} reserved {self.bike} from {self.start_date} to {self.expire_date}'
 
 
 class Malfunction(models.Model):
